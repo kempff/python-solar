@@ -1,0 +1,12 @@
+[[source]]
+url = "https://www.piwheels.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+
+[packages]
+evdev = "*"
+
+[requires]
+python_version = "3.5.3"
