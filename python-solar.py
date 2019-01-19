@@ -47,17 +47,19 @@ def read_data():
 def populate_mode_data(mode_data, client):
     mode_dictionary = { 'P': 'Power on', 'S': 'Standby', 'L': 'Line',
                         'B': 'Battery', 'F': 'Fault', 'H': 'Power saving'}
-    mode_body = {
-        'measurement': 'system_mode',
-        'tags': {
-            'host': "test_installation1",
+    mode_body = [
+    {
+        "measurement": "system_mode",
+        "tags": {
+            "host": "test_installation1"
             },
-        'fields': {
-            'mode': 'unknown'
+        "fields": {
+            "mode": "unknown"
             }
     }
+    ]
     if mode_data[0] in mode_dictionary.keys():
-        mode_body['fields']['mode'] = mode_dictionary[mode_data[0]]
+        mode_body[0]['fields']['mode'] = mode_dictionary[mode_data[0]]
         client.write_points(mode_body)
     else:
         logging.error("Invalid mode {0}".format(mode_data[0]))
