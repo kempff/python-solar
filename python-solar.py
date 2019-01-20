@@ -13,6 +13,7 @@ if debug_data:
     # Open the files for reading
     pigs_file = open("qpigs.txt","r")
     mod_file = open("qmod.txt","r")
+    piri_file = open("qpiri.txt","r")
 
 mode_data = []          # From QMOD command
 status_data = []        # From QPIGS command
@@ -36,11 +37,13 @@ def read_file_data(input_file):
 def read_data():
     global mode_data
     global status_data
+    global ratings_data
     if debug_data:
         mode_data = read_file_data(mod_file).split()
         logging.info("Mode data: {0}".format(mode_data))
         status_data = read_file_data(pigs_file).split()
         logging.info("Status data: {0}".format(status_data))
+        ratings_data = read_file_data(pigs_file).split()
     else:
         devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
         for device in devices:
