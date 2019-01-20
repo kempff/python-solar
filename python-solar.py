@@ -9,6 +9,9 @@ import time
 influx_client = InfluxDBClient('localhost', 8086, database='solardb')
 
 debug_data = True
+write_to_db = True
+
+
 if debug_data:
     # Open the files for reading
     pigs_file = open("qpigs.txt","r")
@@ -43,7 +46,8 @@ def read_data():
         logging.info("Mode data: {0}".format(mode_data))
         status_data = read_file_data(pigs_file).split()
         logging.info("Status data: {0}".format(status_data))
-        ratings_data = read_file_data(pigs_file).split()
+        ratings_data = read_file_data(piri_file).split()
+        logging.info("Ratings data: {0}".format(ratings_data))
     else:
         devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
         for device in devices:
@@ -104,7 +108,6 @@ def populate_status_data(status_data, client):
             }
     }
     ]
-    logging.info(status_data)
     status_body[0]['fields']['grid_voltage'] = float(status_data[0])
     status_body[0]['fields']['grid_frequency'] = float(status_data[1])
     status_body[0]['fields']['ac_output_voltage'] = float(status_data[2])
@@ -130,13 +133,85 @@ def populate_status_data(status_data, client):
     client.write_points(status_body)
 
 
+def populate_ratings_data(ratings_data, client):
+    battery_type_dictionary = { '0': 'AGM', '1': 'Flooded', '2': 'User'}
+    input_voltage_dictionary = { '0': 'Appliance', '1': 'UPS'}
+    output_source_dictionary = { '0': 'Utility first', '1': 'Solar first', '2': 'SBU'}
+    charger_source_dictionary = { '0': 'Utility first', '1': 'Solar first', '2': 'Solar and utility', '3': 'Only solar'}
+    machine_type_dictionary = { '00': 'Grid tie', '01': 'Off grid', '10': 'Hybrid'}
+    topology_dictionary = { '0': 'Transformerless', '1': 'Transformer'}
+    output_mode_dictionary = { '0': 'Single machine', '1': 'Parallel', '2': 'Phase 1 of 3', '3': 'Phase 2 of 3', '4': 'Phase 3 of 3'}
+    ratings_body = [
+    {
+        "measurement": "system_rating",
+        "tags": {
+            "host": "test_installation1"
+            },
+        "fields": {
+            "grid_voltage": 123.4,
+            "grid_current": 50.0,
+            "ac_output_voltage": 123.5,
+            "ac_output_frequency": 50.1,
+            "ac_output_current": 10.1,
+            "ac_output_va": 345,
+            "ac_output_w": 456,
+            "battery_voltage": 34.56,
+            "battery_recharge_voltage": 12.5,
+            "battery_under_voltage": 13,
+            "battery_bulk_voltage": 80,
+            "battery_float_voltage": 60,
+            "battery_type": "AGM",
+            "max_ac_charge_current": 20,
+            "max_charge_current": 23.45,
+            "input_voltage_range": "Appliance",
+            "output_source_priority": "SBU first",
+            "charger_source_priority": "Utility first",
+            "machine_type": "Grid tie",
+            "topology": "Transformer",
+            "output_mode": "Single machine",
+            "battery_redischarge_voltage": 12.3,
+            "pv_ok_for_parallel": 0,
+            "pv_power_balance": 0, 
+            }
+    }
+    ]
+    ratings_body[0]['fields']['grid_voltage'] = float(ratings_data[0])
+    ratings_body[0]['fields']['grid_current'] = float(ratings_data[1])
+    ratings_body[0]['fields']['ac_output_voltage'] = float(ratings_data[2])
+    ratings_body[0]['fields']['ac_output_frequency'] = float(ratings_data[3])
+    ratings_body[0]['fields']['ac_output_current'] = float(ratings_data[4])
+    ratings_body[0]['fields']['ac_output_va'] = float(ratings_data[5])
+    ratings_body[0]['fields']['ac_output_w'] = float(ratings_data[6])
+    ratings_body[0]['fields']['battery_voltage'] = float(ratings_data[7])
+    ratings_body[0]['fields']['battery_recharge_voltage'] = float(ratings_data[8])
+    ratings_body[0]['fields']['battery_under_voltage'] = float(ratings_data[9])
+    ratings_body[0]['fields']['battery_bulk_voltage'] = float(ratings_data[10])
+    ratings_body[0]['fields']['battery_float_voltage'] = float(ratings_data[11])
+    ratings_body[0]['fields']['battery_type'] = battery_type_dictionary[ratings_data[12]]
+    ratings_body[0]['fields']['max_ac_charge_current'] = float(status_data[13])
+    ratings_body[0]['fields']['max_charge_current'] = float(ratings_data[14])
+    ratings_body[0]['fields']['input_voltage_range'] = input_voltage_dictionary[ratings_data[15]]
+    ratings_body[0]['fields']['output_source_priority'] = output_source_dictionary[ratings_data[16]]
+    ratings_body[0]['fields']['charger_source_priority'] = charger_source_dictionary[ratings_data[17]]
+    # Skip 18 (parallel max num)
+    ratings_body[0]['fields']['machine_type'] = machine_type_dictionary[ratings_data[19]]
+    ratings_body[0]['fields']['topology'] = topology_dictionary[ratings_data[20]]
+    ratings_body[0]['fields']['output_mode'] = output_mode_dictionary[ratings_data[21]]
+    ratings_body[0]['fields']['battery_redischarge_voltage'] = float(ratings_data[22])
+    ratings_body[0]['fields']['pv_ok_for_parallel'] = float(ratings_data[23])
+    ratings_body[0]['fields']['pv_power_balance'] = float(ratings_data[24])
+    client.write_points(ratings_body)
+
+
 def populate_data():
     global mode_data
     global status_data
     global influx_client
-    logging.info("Writing to database...")
-    populate_mode_data(mode_data, influx_client)
-    populate_status_data(status_data, influx_client)
+    if write_to_db:
+        logging.info("Writing to database...")
+        populate_mode_data(mode_data, influx_client)
+        populate_status_data(status_data, influx_client)
+        populate_ratings_data(ratings_data, influx_client)
 
 
 # Read every 20 seconds =, write every 30
