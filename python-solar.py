@@ -136,7 +136,7 @@ def populate_status_data(status_data, client):
 def populate_ratings_data(ratings_data, client):
     battery_type_dictionary = { '0': 'AGM', '1': 'Flooded', '2': 'User'}
     input_voltage_dictionary = { '0': 'Appliance', '1': 'UPS'}
-    output_source_dictionary = { '0': 'Utility first', '1': 'Solar first', '2': 'SBU'}
+    output_source_dictionary = { '0': 'Utility first', '1': 'Solar first', '2': 'SBU first'}
     charger_source_dictionary = { '0': 'Utility first', '1': 'Solar first', '2': 'Solar and utility', '3': 'Only solar'}
     machine_type_dictionary = { '00': 'Grid tie', '01': 'Off grid', '10': 'Hybrid'}
     topology_dictionary = { '0': 'Transformerless', '1': 'Transformer'}

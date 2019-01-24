@@ -4,7 +4,7 @@ Alternative to WatchPower software for RS-232 based solar power inverter. Writte
 
 ## Installation
 
-The project requires InfluxDB and Graphana.
+The project requires InfluxDB and Grafana.
 
 ### Influx DB
 
@@ -13,3 +13,12 @@ The project requires InfluxDB and Graphana.
 * Copied all the files to the root folder
 * sudo service influxdb start
 * influx (should open the command prompt for the DB)
+
+### Grafana
+
+* wget https://dl.grafana.com/oss/release/grafana_5.4.3_armhf.deb 
+* sudo dpkg -i grafana_5.4.3_armhf.deb 
+* Auto start at startup: sudo update-rc.d grafana-server defaults
+
+Checking it out:
+Browse to localhost:3000, username and password admin/admin
