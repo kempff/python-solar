@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>425</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>425</width>
+    <height>550</height>
+   </size>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="output_source_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>131</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Output Source 
+Priority</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="output_source_combo">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>20</y>
+      <width>191</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Utility first</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Solar first</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>SBU priority</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="battery_recharge_v_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>131</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Battery Recharge 
+Voltage</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="battery_recharge_v_edit">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>100</y>
+      <width>101</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V &lt;/p&gt;&lt;p&gt;24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V &lt;/p&gt;&lt;p&gt;48V unit: 44V/45V/46V/47V/48V/49V/50V/51V&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="maxLength">
+     <number>4</number>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="battery_re_discharge_v_edit">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>170</y>
+      <width>101</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;12V unit: 00.0V12V/12.3V/12.5V/12.8V/13V/13.3V/13.5V/13.8V/14V/14.3V/14.5 24V unit: 00.0V/24V/24.5V/25V/25.5V/26V/26.5V/27V/27.5V/28V/28.5V/29V 48V unit: 00.0V48V/49V/50V/51V/52V/53V/54V/55V/56V/57V/58V &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;00.0V means battery is full(charging in float mode).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="maxLength">
+     <number>4</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="battery_re_discharge_v_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>160</y>
+      <width>131</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Battery Re-
+discharge Voltage</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="device_charge_combo">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>230</y>
+      <width>191</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Utility first</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Solar first</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Solar and utility</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Solar only</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="device_charge_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>230</y>
+      <width>131</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Output Source 
+Priority</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="battery_cutoff_edit">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>310</y>
+      <width>101</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V &lt;/p&gt;&lt;p&gt;24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V &lt;/p&gt;&lt;p&gt;48V unit: 44V/45V/46V/47V/48V/49V/50V/51V&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="maxLength">
+     <number>4</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="battery_cutoff_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>300</y>
+      <width>131</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Battery Cutoff
+Voltage</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="battery_constant_v_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>370</y>
+      <width>131</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Battery Constant
+Charge Voltage</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="battery_constant_v_edit">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>380</y>
+      <width>101</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V &lt;/p&gt;&lt;p&gt;24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V &lt;/p&gt;&lt;p&gt;48V unit: 44V/45V/46V/47V/48V/49V/50V/51V&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="maxLength">
+     <number>4</number>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="battery_floating_v_edit">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>450</y>
+      <width>101</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V &lt;/p&gt;&lt;p&gt;24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V &lt;/p&gt;&lt;p&gt;48V unit: 44V/45V/46V/47V/48V/49V/50V/51V&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="maxLength">
+     <number>4</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="battery_floating_v_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>440</y>
+      <width>131</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Battery Floating
+Charge Voltage</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>425</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
