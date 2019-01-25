@@ -6,13 +6,16 @@ import schedule
 import logging
 import time
 import solar_config as config
+import sys
 from logging.handlers import RotatingFileHandler
+from PyQt4.QtGui import QMainWindow
+from PyQt4.QtGui import QApplication
+from ui.python_ui import Ui_MainWindow
 
 influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=config.INFLUX_DB)
 
 debug_data = config.DEBUG_MODE
 write_to_db = True
-
 
 if debug_data:
     # Open the files for reading
@@ -238,6 +241,18 @@ schedule.every(2).seconds.do(read_data)
 schedule.every(3).seconds.do(populate_data)
 
 logger.info("Program starts")
+
+class MainWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent)
+        self.setupUi(self)
+
+
+#if __name__ == "__main__":
+#    app = QApplication(sys.argv)
+#    main_window = MainWindow()
+#    main_window.show()
+#    sys.exit(app.exec_())
 
 while True:
     schedule.run_pending()
