@@ -5,10 +5,12 @@ from influxdb import InfluxDBClient
 import schedule
 import logging
 import time
+import solar_config as config
+from logging.handlers import RotatingFileHandler
 
-influx_client = InfluxDBClient('localhost', 8086, database='solardb')
+influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=config.INFLUX_DB)
 
-debug_data = True
+debug_data = config.DEBUG_MODE
 write_to_db = True
 
 
@@ -21,9 +23,23 @@ if debug_data:
 mode_data = []          # From QMOD command
 status_data = []        # From QPIGS command
 ratings_data = []       # From QPIRI command
-
-# Setup logging
-logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s', level=logging.DEBUG)
+# Setup logging, using the configuration to set the path and the level
+log_file_path = config.LOG_FILE_PATH
+file_handler = RotatingFileHandler(log_file_path + 'python_solar.log', maxBytes=2 * 1024 * 1024, backupCount=10)
+log_level_config = config.LOG_LEVEL
+log_level = logging.WARNING
+if log_level_config == 'INFO':
+    log_level = logging.INFO
+elif log_level_config == 'DEBUG':
+    log_level = logging.DEBUG
+file_handler.setLevel(log_level)
+file_handler.setFormatter(logging.Formatter(
+    '\n\n** %(asctime)s %(levelname)s: %(message)s '
+    '[in %(pathname)s:%(lineno)d]')
+)
+logger = logging.getLogger('python_solar')
+logger.setLevel(log_level)
+logger.addHandler(file_handler)
 
 
 # Read next line from each file, if at end of the file loop to the beginning
@@ -43,15 +59,15 @@ def read_data():
     global ratings_data
     if debug_data:
         mode_data = read_file_data(mod_file).split()
-        logging.info("Mode data: {0}".format(mode_data))
+        logger.info("Mode data: {0}".format(mode_data))
         status_data = read_file_data(pigs_file).split()
-        logging.info("Status data: {0}".format(status_data))
+        logger.info("Status data: {0}".format(status_data))
         ratings_data = read_file_data(piri_file).split()
-        logging.info("Ratings data: {0}".format(ratings_data))
+        logger.info("Ratings data: {0}".format(ratings_data))
     else:
         devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
         for device in devices:
-            logging.info("{0} - {1} - {2} ".format(device.fn, device.name, device.phys))
+            logger.info("{0} - {1} - {2} ".format(device.fn, device.name, device.phys))
 
 
 
@@ -73,7 +89,7 @@ def populate_mode_data(mode_data, client):
         mode_body[0]['fields']['mode'] = mode_dictionary[mode_data[0]]
         client.write_points(mode_body)
     else:
-        logging.error("Invalid mode {0}".format(mode_data[0]))
+        logger.error("Invalid mode {0}".format(mode_data[0]))
     
         
 def populate_status_data(status_data, client):
@@ -207,18 +223,21 @@ def populate_data():
     global mode_data
     global status_data
     global influx_client
-    if write_to_db:
-        logging.info("Writing to database...")
-        populate_mode_data(mode_data, influx_client)
-        populate_status_data(status_data, influx_client)
-        populate_ratings_data(ratings_data, influx_client)
+    try:
+        if write_to_db:
+            logger.info("Writing to database...")
+            populate_mode_data(mode_data, influx_client)
+            populate_status_data(status_data, influx_client)
+            populate_ratings_data(ratings_data, influx_client)
+    except Exception as e:
+        logger.error(str(e))
 
 
 # Read every 20 seconds =, write every 30
 schedule.every(2).seconds.do(read_data)
 schedule.every(3).seconds.do(populate_data)
 
-logging.info("Program starts")
+logger.info("Program starts")
 
 while True:
     schedule.run_pending()

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e25a90f1a47957c189af389df890273b6d63a7d5295d84ed71d94704cf61ab2c"
+            "sha256": "294f9e139349ca3777feda4411b7afa923d57dc27df89b892adc87f34d91341c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -28,42 +28,12 @@
             ],
             "version": "==3.0.4"
         },
-        "confapp": {
-            "hashes": [
-                "sha256:1c999d2619c3856e51c3eea252ae8b50207fc765769fbb3cbff3c3fc1cd4110c"
-            ],
-            "version": "==1.0.1"
-        },
-        "dill": {
-            "hashes": [
-                "sha256:6ad5ae56d2a1067258a44343efbc0fbb5fb7e0cfefa2152f01f6b34cdfe98fc6"
-            ],
-            "version": "==0.2.9"
-        },
-        "django": {
-            "hashes": [
-                "sha256:a32c22af23634e1d11425574dce756098e015a165be02e4690179889b207c7a8"
-            ],
-            "version": "==2.1.5"
-        },
-        "django-jfu-pyforms": {
-            "hashes": [
-                "sha256:97c3c20762fa7697954364edd60e48f5675c9a15984dc16d6e23ff056192c1e2"
-            ],
-            "version": "==2.0.9.1"
-        },
         "evdev": {
             "hashes": [
                 "sha256:8ec10b7f15b2a45403111ebeed8822d174c9c5dce1a136ca7a31f5bdd74599e1"
             ],
             "index": "pypi",
             "version": "==1.1.2"
-        },
-        "filelock": {
-            "hashes": [
-                "sha256:b8d5ca5ca1c815e1574aee746650ea7301de63d87935b3463d26368b76e31633"
-            ],
-            "version": "==3.0.10"
         },
         "idna": {
             "hashes": [
@@ -77,42 +47,6 @@
             ],
             "index": "pypi",
             "version": "==5.2.1"
-        },
-        "numpy": {
-            "hashes": [
-                "sha256:35394d2a3d2fb1e72218ac7ceb394a6a07cc428bb1b8f3303bd177e170e30401",
-                "sha256:4f48a412c7a75a127eb26ae15f6206895134f3b0ff75069b51e8c54a47a96794"
-            ],
-            "version": "==1.16.0"
-        },
-        "opencv-python": {
-            "hashes": [
-                "sha256:1b06420f62b22092b21ef1217a987a101d45d8e323fcce9da4c2cbd679b60e18",
-                "sha256:329d9d9fdd62b93d44a485aeaab4602c6f5b8555ea8bcc7dbcdc62c90cfe2c3f",
-                "sha256:33b8462f586b36f2a067d73fc4bb495ae1effef13141a12f7f3a60172e409b90",
-                "sha256:3a32f926e1b319f5813ef8574b7dd3ac427768786ef0efc4a5256eb1a9b8bbe5"
-            ],
-            "version": "==3.4.4.19"
-        },
-        "orquestra": {
-            "hashes": [
-                "sha256:c8e7f55b275c159caaef6e43ab41c12dfe06c26dd9e2716d9f581241870b9bee"
-            ],
-            "version": "==1.1"
-        },
-        "pillow": {
-            "hashes": [
-                "sha256:6b8dca92c1d8f361e7e09b93125f0da080c94f44187ea0f8f7f87fbe88247bf6",
-                "sha256:ed4e05737ed076aed4065e05b67983650b10110f3e133444e8e87bd572e1492a"
-            ],
-            "version": "==5.4.1"
-        },
-        "pyforms-web": {
-            "hashes": [
-                "sha256:4815d31e8d14789d8bd9d86a7d4a7aaaaaea13fd05042fa28a17297914fe62de"
-            ],
-            "index": "pypi",
-            "version": "==4.0.7"
         },
         "python-dateutil": {
             "hashes": [
@@ -139,24 +73,11 @@
             "index": "pypi",
             "version": "==0.6.0"
         },
-        "simplejson": {
-            "hashes": [
-                "sha256:22f039c2f22afbb4df7c9201e88547287cb720606292ffd6d985112899c9ee17",
-                "sha256:f5432702f0b7e70802e7d55dc6b5c4d68aa4fa2385913a1043e171d449b245e6"
-            ],
-            "version": "==3.16.1"
-        },
         "six": {
             "hashes": [
                 "sha256:3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c"
             ],
             "version": "==1.12.0"
-        },
-        "sorl-thumbnail": {
-            "hashes": [
-                "sha256:d9e3f018d19293824803e4ffead96b19dfcd44fa7987cea392f50436817bef34"
-            ],
-            "version": "==12.5.0"
         },
         "urllib3": {
             "hashes": [
