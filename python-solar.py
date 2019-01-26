@@ -1,6 +1,5 @@
 # Python reader for solar panel controller
 
-import evdev
 from influxdb import InfluxDBClient
 import schedule
 import logging
@@ -11,6 +10,12 @@ from logging.handlers import RotatingFileHandler
 from PyQt4.QtGui import QMainWindow
 from PyQt4.QtGui import QApplication
 from ui.python_ui import Ui_MainWindow
+
+import sys
+import usb.core
+
+# find Solar device
+usb_dev = usb.core.find(idVendor=0x665, idProduct=0x5161)
 
 influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=config.INFLUX_DB)
 
@@ -36,14 +41,19 @@ if log_level_config == 'INFO':
 elif log_level_config == 'DEBUG':
     log_level = logging.DEBUG
 file_handler.setLevel(log_level)
-file_handler.setFormatter(logging.Formatter(
+formatter = logging.Formatter(
     '\n\n** %(asctime)s %(levelname)s: %(message)s '
     '[in %(pathname)s:%(lineno)d]')
-)
+file_handler.setFormatter(formatter)
+
+# TODO make this configyurable
 logger = logging.getLogger('python_solar')
 logger.setLevel(log_level)
-logger.addHandler(file_handler)
-
+# TODO put back logger.addHandler(file_handler)
+console = logging.StreamHandler()
+console.setFormatter(formatter)
+# add the handler to the root logger
+logger.addHandler(console)
 
 # Read next line from each file, if at end of the file loop to the beginning
 def read_file_data(input_file):
@@ -68,9 +78,7 @@ def read_data():
         ratings_data = read_file_data(piri_file).split()
         logger.info("Ratings data: {0}".format(ratings_data))
     else:
-        devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
-        for device in devices:
-            logger.info("{0} - {1} - {2} ".format(device.fn, device.name, device.phys))
+        print('Reading') 
 
 
 
@@ -240,7 +248,8 @@ def populate_data():
 schedule.every(2).seconds.do(read_data)
 schedule.every(3).seconds.do(populate_data)
 
-logger.info("Program starts")
+logger.info("Program starts: Debug {0}".format(debug_data))
+logger.info("USB info: {0}".format(usb_dev))
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
