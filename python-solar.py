@@ -10,12 +10,20 @@ from logging.handlers import RotatingFileHandler
 from PyQt4.QtGui import QMainWindow
 from PyQt4.QtGui import QApplication
 from ui.python_ui import Ui_MainWindow
+import crc16
 
 import sys
 import usb.core
 
 # find Solar device
-usb_dev = usb.core.find(idVendor=0x665, idProduct=0x5161)
+vendorId = 0x0665
+productId = 0x5161
+interface = 0
+usb_dev = usb.core.find(idVendor=vendorId, idProduct=productId)
+if usb_dev.is_kernel_driver_active(interface):
+    usb_dev.detach_kernel_driver(interface)
+usb_dev.set_interface_altsetting(0,0)
+
 
 influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=config.INFLUX_DB)
 
@@ -64,6 +72,34 @@ def read_file_data(input_file):
         return_data = input_file.readline()
     return return_data
     
+def getCommand(cmd):
+    cmd = cmd.encode('utf-8')
+    crc = crc16.crc16xmodem(cmd).to_bytes(2,'big')
+    cmd = cmd+crc
+    cmd = cmd+b'\r'
+    while len(cmd)<8:
+        cmd = cmd+b'\0'
+    return cmd
+
+def sendCommand(cmd):
+    global usb_dev
+    usb_dev.ctrl_transfer(0x21, 0x9, 0x200, 0, cmd)
+
+def getResult(timeout=100):
+    global usb_dev
+    res=""
+    i=0
+    while '\r' not in res and i<20:
+        try:
+            res+="".join([chr(i) for i in usb_dev.read(0x81, 8, timeout) if i!=0x00])
+        except usb.core.USBError as e:
+            if e.errno == 110:
+                pass
+            else:
+                raise
+        i+=1
+    return res
+  
 
 # Read data function (either from USB or file)
 def read_data():
@@ -79,6 +115,12 @@ def read_data():
         logger.info("Ratings data: {0}".format(ratings_data))
     else:
         print('Reading') 
+        sendCommand(getCommand('QMOD'))
+        res = getResult()  
+        print(res)
+        sendCommand(getCommand('QPIRI'))
+        res = getResult()  
+        print(res)
 
 
 

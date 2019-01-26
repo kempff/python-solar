@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "294f9e139349ca3777feda4411b7afa923d57dc27df89b892adc87f34d91341c"
+            "sha256": "b27a911b45fbe02e89299a7a53f55d66afefd8ba23a2799d2dfa96b217e5e54d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -28,12 +28,14 @@
             ],
             "version": "==3.0.4"
         },
-        "evdev": {
+        "crc16": {
             "hashes": [
-                "sha256:8ec10b7f15b2a45403111ebeed8822d174c9c5dce1a136ca7a31f5bdd74599e1"
+                "sha256:6b6cd7726361fc727623cb048fd086f4bfae7ebca6ad84d5f357fac72cc6418b",
+                "sha256:a390404044c0407e79829dff34485db7f2882a523af6e3e30682b9f30676d9e3",
+                "sha256:beb37a1e0c681184f5a2f02acf5cc16174a8d974b9d4b0cd4664ed8150b0b895"
             ],
             "index": "pypi",
-            "version": "==1.1.2"
+            "version": "==0.1.1"
         },
         "idna": {
             "hashes": [
@@ -59,6 +61,13 @@
                 "sha256:32b0891edff07e28efe91284ed9c31e123d84bea3fd98e1f72be2508f43ef8d9"
             ],
             "version": "==2018.9"
+        },
+        "pyusb": {
+            "hashes": [
+                "sha256:789749b8a9bf3828c55d41df2c3e569739cd1bdbe1517e8d940af9587a711faa"
+            ],
+            "index": "pypi",
+            "version": "==1.0.2"
         },
         "requests": {
             "hashes": [
