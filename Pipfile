@@ -7,7 +7,6 @@ name = "pypi"
 
 [packages]
 influxdb = "*"
-schedule = "*"
 pyusb = "*"
 crc16 = "*"
 

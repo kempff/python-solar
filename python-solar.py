@@ -1,7 +1,7 @@
 # Python reader for solar panel controller
 
 from influxdb import InfluxDBClient
-import schedule
+from threading import Thread
 import logging
 import time
 import solar_config as config
@@ -328,14 +328,22 @@ def populate_data():
         logger.error(str(e))
 
 
-# Read every 20 seconds =, write every 30
-schedule.every(2).seconds.do(read_data)
-schedule.every(3).seconds.do(populate_data)
+def process_function():
+    while True:
+        read_data()
+        populate_data()
+        time.sleep(config.PROCESS_TIME)
+
 
 logger.info("Program starts: Debug {0}".format(debug_data))
 if not debug_data:
     logger.info("USB info: {0}".format(usb_dev))
 
+
+# Run reading of data and writing to DB as a background thread
+process_thread = Thread(target=process_function)
+process_thread.start()
+    
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
@@ -349,6 +357,4 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #    main_window.show()
 #    sys.exit(app.exec_())
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+
