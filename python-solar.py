@@ -15,14 +15,6 @@ import crc16
 import sys
 import usb.core
 
-# Configure USB to Solar device
-vendorId = 0x0665
-productId = 0x5161
-interface = 0
-usb_dev = usb.core.find(idVendor=vendorId, idProduct=productId)
-if usb_dev.is_kernel_driver_active(interface):
-    usb_dev.detach_kernel_driver(interface)
-usb_dev.set_interface_altsetting(0,0)
 
 # Configure DB
 influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=config.INFLUX_DB)
@@ -35,6 +27,15 @@ if debug_data:
     pigs_file = open("qpigs.txt","r")
     mod_file = open("qmod.txt","r")
     piri_file = open("qpiri.txt","r")
+else:
+    # Configure USB to Solar device
+    vendorId = 0x0665
+    productId = 0x5161
+    interface = 0
+    usb_dev = usb.core.find(idVendor=vendorId, idProduct=productId)
+    if usb_dev.is_kernel_driver_active(interface):
+        usb_dev.detach_kernel_driver(interface)
+    usb_dev.set_interface_altsetting(0,0)
 
 mode_data = []          # From QMOD command
 status_data = []        # From QPIGS command
@@ -42,6 +43,7 @@ ratings_data = []       # From QPIRI command
 # Setup logging, using the configuration to set the path and the level
 log_file_path = config.LOG_FILE_PATH
 file_handler = RotatingFileHandler(log_file_path + 'python_solar.log', maxBytes=2 * 1024 * 1024, backupCount=10)
+logger = logging.getLogger('python_solar')
 log_level_config = config.LOG_LEVEL
 log_level = logging.WARNING
 if log_level_config == 'INFO':
@@ -105,7 +107,7 @@ def get_result(timeout=100):
     return res
 
 
-def process_result(command, result_data)
+def process_result(command, result_data):
     global mode_data
     global status_data
     global ratings_data
@@ -119,23 +121,23 @@ def process_result(command, result_data)
         if crc == rx_crc:
             result_dictionary[command] = result_data[1:-3]
         else:
-            logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc)
+            logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
     else:
-        logger.error('Incorrect start byte for {0} command'.format(command)
+        logger.error('Incorrect start byte for {0} command'.format(command))
 
 
 # Read data function (either from USB or file)
 def read_data():
-    global mode_data
-    global status_data
-    global ratings_data
     if debug_data:
-        mode_data = read_file_data(mod_file).split()
-        logger.info("Mode data: {0}".format(mode_data))
-        status_data = read_file_data(pigs_file).split()
-        logger.info("Status data: {0}".format(status_data))
-        ratings_data = read_file_data(piri_file).split()
-        logger.info("Ratings data: {0}".format(ratings_data))
+        the_data = read_file_data(mod_file)
+        logger.info("Mode data: {0}".format(the_data))
+        process_result('QMOD', the_data)
+        the_data = read_file_data(pigs_file)
+        logger.info("Status data: {0}".format(the_data))
+        process_result('QPIGS', the_data)
+        the_data = read_file_data(piri_file)
+        logger.info("Ratings data: {0}".format(the_data))
+        process_result('QPIRI', the_data)
     else:
         send_command(get_command('QMOD'))
         result = get_result()  
@@ -167,7 +169,7 @@ def populate_mode_data(mode_data, client):
     else:
         logger.error("Invalid mode {0}".format(mode_data[0]))
     
-        
+
 def populate_status_data(status_data, client):
     status_body = [
     {
@@ -314,7 +316,8 @@ schedule.every(2).seconds.do(read_data)
 schedule.every(3).seconds.do(populate_data)
 
 logger.info("Program starts: Debug {0}".format(debug_data))
-logger.info("USB info: {0}".format(usb_dev))
+if not debug_data:
+    logger.info("USB info: {0}".format(usb_dev))
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
