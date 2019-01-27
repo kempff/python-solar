@@ -22,6 +22,7 @@ influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=
 debug_data = config.DEBUG_MODE
 write_to_db = True
 
+
 if debug_data:
     # Open the files for reading
     pigs_file = open("qpigs.txt","r")
@@ -351,10 +352,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
 
-#if __name__ == "__main__":
-#    app = QApplication(sys.argv)
-#    main_window = MainWindow()
-#    main_window.show()
-#    sys.exit(app.exec_())
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    main_window = MainWindow()
+    main_window.show()
+    sys.exit(app.exec_())
 
 
