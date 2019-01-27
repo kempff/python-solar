@@ -107,19 +107,32 @@ def get_result(timeout=100):
     return res
 
 
-def process_result(command, result_data):
+def write_mode_data(the_data):
     global mode_data
+    mode_data = the_data
+    
+    
+def write_status_data(the_data):
     global status_data
+    status_data = the_data
+    
+    
+def write_ratings_data(the_data):
     global ratings_data
-    result_dictionary = {'QMOD' : mode_data,
-                         'QPIRI': ratings_data,
-                         'QPIGS': status_data}
+    ratings_data = the_data
+    
+
+def process_result(command, result_data):
+    global debug_data
+    result_dictionary = {'QMOD' : write_mode_data,
+                         'QPIRI': write_ratings_data,
+                         'QPIGS': write_status_data}
     if result_data[0] is '(':
         check_data = result_data[:-3].encode('utf-8')
-        rx_crc = result_data[-3:-1].encode('utf-8').to_bytes(2,'big')
+        rx_crc = result_data[-3:-1].encode('utf-8')
         crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
-        if crc == rx_crc:
-            result_dictionary[command] = result_data[1:-3]
+        if crc == rx_crc or debug_data:
+            result_dictionary[command](result_data[1:-3])
         else:
             logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
     else:
@@ -129,6 +142,7 @@ def process_result(command, result_data):
 # Read data function (either from USB or file)
 def read_data():
     if debug_data:
+        get_command('(B')
         the_data = read_file_data(mod_file)
         logger.info("Mode data: {0}".format(the_data))
         process_result('QMOD', the_data)
@@ -304,8 +318,11 @@ def populate_data():
     try:
         if write_to_db:
             logger.info("Writing to database...")
+            logger.debug('Mode data: {0}'.format(mode_data))
             populate_mode_data(mode_data, influx_client)
+            logger.debug('Status data: {0}'.format(status_data))
             populate_status_data(status_data, influx_client)
+            logger.debug('Ratings data: {0}'.format(ratings_data))
             populate_ratings_data(ratings_data, influx_client)
     except Exception as e:
         logger.error(str(e))
