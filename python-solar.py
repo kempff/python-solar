@@ -132,7 +132,7 @@ def process_result(command, result_data):
         rx_crc = result_data[-3:-1].encode('utf-8')
         crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
         if crc == rx_crc or debug_data:
-            result_dictionary[command](result_data[1:-3])
+            result_dictionary[command](result_data[1:-3].split())
         else:
             logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
     else:
