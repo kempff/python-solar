@@ -9,6 +9,7 @@ import sys
 from logging.handlers import RotatingFileHandler
 from PyQt4.QtGui import QMainWindow
 from PyQt4.QtGui import QApplication
+from PyQt4.QtCore import pyqtSlot
 from ui.python_ui import Ui_MainWindow
 import crc16
 
@@ -350,6 +351,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+        self.battery_recharge_v_button.clicked.connect(self.update_battery_recharge_v)
+        self.output_source_button.clicked.connect(self.update_output_source)
+        
+        
+    @pyqtSlot()
+    def update_battery_recharge_v(self):
+        print('Recharge Clicked: {0}'.format(self.battery_recharge_v_edit.text()))
+
+    @pyqtSlot()
+    def update_output_source(self):
+        print('Output source Clicked: {0}'.format(self.output_source_combo.currentText()))
 
 
 if __name__ == "__main__":
