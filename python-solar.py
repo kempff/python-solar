@@ -15,7 +15,7 @@ import crc16
 import sys
 import usb.core
 
-# find Solar device
+# Configure USB to Solar device
 vendorId = 0x0665
 productId = 0x5161
 interface = 0
@@ -24,7 +24,7 @@ if usb_dev.is_kernel_driver_active(interface):
     usb_dev.detach_kernel_driver(interface)
 usb_dev.set_interface_altsetting(0,0)
 
-
+# Configure DB
 influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=config.INFLUX_DB)
 
 debug_data = config.DEBUG_MODE
@@ -53,15 +53,16 @@ formatter = logging.Formatter(
     '\n\n** %(asctime)s %(levelname)s: %(message)s '
     '[in %(pathname)s:%(lineno)d]')
 file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
-# TODO make this configyurable
-logger = logging.getLogger('python_solar')
-logger.setLevel(log_level)
-# TODO put back logger.addHandler(file_handler)
-console = logging.StreamHandler()
-console.setFormatter(formatter)
-# add the handler to the root logger
-logger.addHandler(console)
+# Configure screen logging according to config
+if config.PRINT_LOGS:
+    logger = logging.getLogger('python_solar')
+    logger.setLevel(logging.DEBUG)
+    console = logging.StreamHandler()
+    console.setFormatter(formatter)
+    # add the handler to the root logger
+    logger.addHandler(console)
 
 # Read next line from each file, if at end of the file loop to the beginning
 def read_file_data(input_file):
@@ -71,8 +72,9 @@ def read_file_data(input_file):
         input_file.seek(0)
         return_data = input_file.readline()
     return return_data
-    
-def getCommand(cmd):
+
+
+def get_command(cmd):
     cmd = cmd.encode('utf-8')
     crc = crc16.crc16xmodem(cmd).to_bytes(2,'big')
     cmd = cmd+crc
@@ -81,11 +83,13 @@ def getCommand(cmd):
         cmd = cmd+b'\0'
     return cmd
 
-def sendCommand(cmd):
+
+def send_command(cmd):
     global usb_dev
     usb_dev.ctrl_transfer(0x21, 0x9, 0x200, 0, cmd)
 
-def getResult(timeout=100):
+
+def get_result(timeout=100):
     global usb_dev
     res=""
     i=0
@@ -99,7 +103,26 @@ def getResult(timeout=100):
                 raise
         i+=1
     return res
-  
+
+
+def process_result(command, result_data)
+    global mode_data
+    global status_data
+    global ratings_data
+    result_dictionary = {'QMOD' : mode_data,
+                         'QPIRI': ratings_data,
+                         'QPIGS': status_data}
+    if result_data[0] is '(':
+        check_data = result_data[:-3].encode('utf-8')
+        rx_crc = result_data[-3:-1].encode('utf-8').to_bytes(2,'big')
+        crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
+        if crc == rx_crc:
+            result_dictionary[command] = result_data[1:-3]
+        else:
+            logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc)
+    else:
+        logger.error('Incorrect start byte for {0} command'.format(command)
+
 
 # Read data function (either from USB or file)
 def read_data():
@@ -114,14 +137,14 @@ def read_data():
         ratings_data = read_file_data(piri_file).split()
         logger.info("Ratings data: {0}".format(ratings_data))
     else:
-        print('Reading') 
-        sendCommand(getCommand('QMOD'))
-        res = getResult()  
-        print(res)
-        sendCommand(getCommand('QPIRI'))
-        res = getResult()  
-        print(res)
-
+        send_command(get_command('QMOD'))
+        result = get_result()  
+        logger.debug(result)
+        process_result('QMOD', result)
+        send_command(get_command('QPIRI'))
+        result = get_result()
+        logger.debug(result)
+        process_result('QPIRI', result)
 
 
 def populate_mode_data(mode_data, client):
@@ -292,6 +315,7 @@ schedule.every(3).seconds.do(populate_data)
 
 logger.info("Program starts: Debug {0}".format(debug_data))
 logger.info("USB info: {0}".format(usb_dev))
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
