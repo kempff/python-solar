@@ -135,7 +135,7 @@ Voltage</string>
      </rect>
     </property>
     <property name="text">
-     <string>Output Source 
+     <string>Device Charge 
 Priority</string>
     </property>
    </widget>

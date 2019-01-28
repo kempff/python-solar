@@ -331,10 +331,13 @@ def populate_data():
 
 
 def process_function():
-    while True:
+    global processing
+    logging.info('Processing thread entry')
+    while processing:
         read_data()
         populate_data()
         time.sleep(config.PROCESS_TIME)
+    logging.info('Processing thread exit')
 
 
 logger.info("Program starts: Debug {0}".format(debug_data))
@@ -342,32 +345,59 @@ if not debug_data:
     logger.info("USB info: {0}".format(usb_dev))
 
 
-# Run reading of data and writing to DB as a background thread
-process_thread = Thread(target=process_function)
-process_thread.start()
-    
-
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.battery_recharge_v_button.clicked.connect(self.update_battery_recharge_v)
         self.output_source_button.clicked.connect(self.update_output_source)
+        self.device_charge_button.clicked.connect(self.update_device_charge)
+        self.battery_cutoff_button.clicked.connect(self.update_battery_cutoff)
+        self.battery_constant_v_button.clicked.connect(self.update_battery_constant_v)
+        self.battery_floating_v_button.clicked.connect(self.update_battery_floating_v)
+        self.generate_report_button.clicked.connect(self.generate_report)
         
         
     @pyqtSlot()
     def update_battery_recharge_v(self):
-        print('Recharge Clicked: {0}'.format(self.battery_recharge_v_edit.text()))
+        logger.info('Recharge Clicked: {0}'.format(self.battery_recharge_v_edit.text()))
 
     @pyqtSlot()
     def update_output_source(self):
-        print('Output source Clicked: {0}'.format(self.output_source_combo.currentText()))
+        logger.info('Output source Clicked: {0}'.format(self.output_source_combo.currentText()))
+        
+    @pyqtSlot()
+    def update_device_charge(self):
+        logger.info('Device charge Clicked: {0}'.format(self.device_charge_combo.currentText()))
+        
+    @pyqtSlot()
+    def update_battery_cutoff(self):
+        logger.info('Battery cutoff Clicked: {0}'.format(self.battery_cutoff_edit.text()))
+        
+    @pyqtSlot()
+    def update_battery_constant_v(self):
+        logger.info('Battery constant V Clicked: {0}'.format(self.battery_constant_v_edit.text()))
+        
+    @pyqtSlot()
+    def update_battery_floating_v(self):
+        logger.info('Battery floating V Clicked: {0}'.format(self.battery_floating_v_edit.text()))
+        
+    @pyqtSlot()
+    def generate_report(self):
+        logger.info('Generate report Clicked: {0} - {1}'.format(self.report_from_edit.text(),self.report_to_edit.text()))
+        
 
 
 if __name__ == "__main__":
+    global processing
+    # Run reading of data and writing to DB as a background thread
+    process_thread = Thread(target=process_function)
+    processing = True
+    process_thread.start()
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
     sys.exit(app.exec_())
+    processing = False
 
 
