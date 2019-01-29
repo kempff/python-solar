@@ -22,6 +22,7 @@ influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=
 
 debug_data = config.DEBUG_MODE
 write_to_db = True
+request_ratings = True              # Flag to request ratings data, only when a command was sent and at startup
 
 
 if debug_data:
@@ -143,6 +144,7 @@ def process_result(command, result_data):
 
 # Read data function (either from USB or file)
 def read_data():
+    global request_ratings
     if debug_data:
         get_command('(B')
         the_data = read_file_data(mod_file)
@@ -159,10 +161,16 @@ def read_data():
         result = get_result()  
         logger.debug(result)
         process_result('QMOD', result)
-        send_command(get_command('QPIRI'))
+        send_command(get_command('QPIGS'))
         result = get_result()
         logger.debug(result)
-        process_result('QPIRI', result)
+        process_result('QPIGS', result)
+        if request_ratings:
+            send_command(get_command('QPIGS'))
+            result = get_result()
+            logger.debug(result)
+            process_result('QPIGS', result)
+            request_ratings = False
 
 
 def populate_mode_data(mode_data, client):
@@ -330,14 +338,25 @@ def populate_data():
         logger.error(str(e))
 
 
+def send_command_with_ack_reply(command):
+    global request_ratings
+    send_command(get_command(command))
+    result = get_result()
+    if result is '(ACK':
+        logger.info('Command {0} processd OK').format(command)
+        request_ratings = True
+    else:
+        logger.error('Command {0} error, reply {1}'.format(command,result))
+
+
 def process_function():
     global processing
-    logging.info('Processing thread entry')
+    logger.info('Processing thread entry')
     while processing:
         read_data()
         populate_data()
         time.sleep(config.PROCESS_TIME)
-    logging.info('Processing thread exit')
+    logger.info('Processing thread exit')
 
 
 logger.info("Program starts: Debug {0}".format(debug_data))
@@ -361,26 +380,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def update_battery_recharge_v(self):
         logger.info('Recharge Clicked: {0}'.format(self.battery_recharge_v_edit.text()))
+        send_command_with_ack_reply('PBCV'+self.battery_recharge_v_edit.text())
 
     @pyqtSlot()
     def update_output_source(self):
+        output_sources = { 'Utility first': '00', 'Solar first': '01', 'SBU priority': '02'}
         logger.info('Output source Clicked: {0}'.format(self.output_source_combo.currentText()))
+        send_command_with_ack_reply('POP'+output_sources[self.output_source_combo.currentText()])
         
     @pyqtSlot()
     def update_device_charge(self):
+        output_sources = { 'Utility first': '00', 'Solar first': '01', 'Solar and utility': '02', 'Solar only': '03'}
         logger.info('Device charge Clicked: {0}'.format(self.device_charge_combo.currentText()))
+        send_command_with_ack_reply('PCP'+output_sources[self.device_charge_combo.currentText()])
         
     @pyqtSlot()
     def update_battery_cutoff(self):
         logger.info('Battery cutoff Clicked: {0}'.format(self.battery_cutoff_edit.text()))
+        send_command_with_ack_reply('PSDV'+self.battery_cutoff_edit.text())
         
     @pyqtSlot()
     def update_battery_constant_v(self):
         logger.info('Battery constant V Clicked: {0}'.format(self.battery_constant_v_edit.text()))
+        send_command_with_ack_reply('PCVV'+self.battery_constant_v_edit.text())
         
     @pyqtSlot()
     def update_battery_floating_v(self):
         logger.info('Battery floating V Clicked: {0}'.format(self.battery_floating_v_edit.text()))
+        send_command_with_ack_reply('PBFT'+self.battery_floating_v_edit.text())
         
     @pyqtSlot()
     def generate_report(self):
