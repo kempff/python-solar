@@ -9,9 +9,12 @@ import sys
 from logging.handlers import RotatingFileHandler
 from PyQt4.QtGui import QMainWindow
 from PyQt4.QtGui import QApplication
+from PyQt4.QtGui import QMessageBox
+from PyQt4.QtGui import QFileDialog
 from PyQt4.QtCore import pyqtSlot
 from ui.python_ui import Ui_MainWindow
 import crc16
+from datetime import datetime, date
 
 import sys
 import usb.core
@@ -343,11 +346,22 @@ def send_command_with_ack_reply(command):
     send_command(get_command(command))
     result = get_result()
     if result is '(ACK':
-        logger.info('Command {0} processd OK').format(command)
+        logger.info('Command {0} processed OK').format(command)
         request_ratings = True
     else:
         logger.error('Command {0} error, reply {1}'.format(command,result))
 
+
+def perform_aggregations(start_date, end_date):
+    try:
+        valid_start_date = datetime.strptime(start_date, '%Y/%m/%d').date()
+        valid_end_date = datetime.strptime(end_date, '%Y/%m/%d').date()
+        filename = valid_start_date.strftime("%y-%m-%d") + " to " +  valid_end_date.strftime("%y-%m-%d") + ".xlsx"
+        logger.info("Filename selected: {0}".format(filename))
+    except ValueError:
+        mb = QMessageBox ("Error",'Start {0} or end {1} date incorrect'.format(start_date, end_date),QMessageBox.Warning,QMessageBox.Ok,0,0)
+        mb.exec_()
+        logger.error('Start {0} or end {1} date incorrect'.format(start_date, end_date))
 
 def process_function():
     global processing
@@ -411,8 +425,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     @pyqtSlot()
     def generate_report(self):
-        logger.info('Generate report Clicked: {0} - {1}'.format(self.report_from_edit.text(),self.report_to_edit.text()))
-        
+        logger.info('Generate report Clicked: {0} - {1}'.format(self.report_from_edit.text(), self.report_to_edit.text()))
+        perform_aggregations(self.report_from_edit.text(), self.report_to_edit.text())
 
 
 if __name__ == "__main__":

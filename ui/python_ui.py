@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Inverter interface version 0.10", None))
         self.output_source_button.setText(_translate("MainWindow", "Output Source \n"
 "Priority", None))
         self.output_source_combo.setItemText(0, _translate("MainWindow", "Utility first", None))
@@ -117,17 +117,17 @@ class Ui_MainWindow(object):
         self.device_charge_combo.setItemText(3, _translate("MainWindow", "Solar only", None))
         self.device_charge_button.setText(_translate("MainWindow", "Device Charge \n"
 "Priority", None))
-        self.battery_cutoff_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V </p><p>24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V </p><p>48V unit: 44V/45V/46V/47V/48V/49V/50V/51V</p></body></html>", None))
+        self.battery_cutoff_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>40.0 to 48.0</p></body></html>", None))
         self.battery_cutoff_button.setText(_translate("MainWindow", "Battery Cutoff\n"
 "Voltage", None))
         self.battery_constant_v_button.setText(_translate("MainWindow", "Battery Constant\n"
 "Charge Voltage", None))
-        self.battery_constant_v_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V </p><p>24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V </p><p>48V unit: 44V/45V/46V/47V/48V/49V/50V/51V</p></body></html>", None))
-        self.battery_floating_v_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V </p><p>24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V </p><p>48V unit: 44V/45V/46V/47V/48V/49V/50V/51V</p></body></html>", None))
+        self.battery_constant_v_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>48.0 to 58.4</p></body></html>", None))
+        self.battery_floating_v_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>48.0 to 58.4</p></body></html>", None))
         self.battery_floating_v_button.setText(_translate("MainWindow", "Battery Floating\n"
 "Charge Voltage", None))
         self.generate_report_button.setText(_translate("MainWindow", "Generate\n"
 "Report", None))
-        self.report_from_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V </p><p>24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V </p><p>48V unit: 44V/45V/46V/47V/48V/49V/50V/51V</p></body></html>", None))
-        self.report_to_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>12V unit: 11V/11.3V/11.5V/11.8V/12V/12.3V/12.5V/12.8V </p><p>24V unit: 22V/22.5V/23V/23.5V/24V/24.5V/25V/25.5V </p><p>48V unit: 44V/45V/46V/47V/48V/49V/50V/51V</p></body></html>", None))
+        self.report_from_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>Format: yyyy/mm/dd</p></body></html>", None))
+        self.report_to_edit.setToolTip(_translate("MainWindow", "<html><head/><body><p>Format: yyyy/mm/dd</p></body></html>", None))
 
