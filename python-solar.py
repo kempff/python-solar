@@ -15,7 +15,8 @@ from PyQt4.QtCore import pyqtSlot
 from ui.python_ui import Ui_MainWindow
 import crc16
 from datetime import datetime, date
-
+import pytz
+from openpyxl import Workbook
 import sys
 import usb.core
 
@@ -176,33 +177,15 @@ def read_data():
             request_ratings = False
 
 
-def populate_mode_data(mode_data, client):
+def populate_status_data(status_data, mode_data, client):
     mode_dictionary = { 'P': 'Power on', 'S': 'Standby', 'L': 'Line',
                         'B': 'Battery', 'F': 'Fault', 'H': 'Power saving'}
-    mode_body = [
-    {
-        "measurement": "system_mode",
-        "tags": {
-            "host": "test_installation1"
-            },
-        "fields": {
-            "mode": "unknown"
-            }
-    }
-    ]
-    if mode_data[0] in mode_dictionary.keys():
-        mode_body[0]['fields']['mode'] = mode_dictionary[mode_data[0]]
-        client.write_points(mode_body)
-    else:
-        logger.error("Invalid mode {0}".format(mode_data[0]))
-    
-
-def populate_status_data(status_data, client):
     status_body = [
     {
         "measurement": "system_status",
         "tags": {
-            "host": "test_installation1"
+            "installation": config.INSTALLATION,
+            "mode": "unknown",
             },
         "fields": {
             "grid_voltage": 123.4,
@@ -229,6 +212,10 @@ def populate_status_data(status_data, client):
             }
     }
     ]
+    if mode_data[0] in mode_dictionary.keys():
+        status_body[0]['tags']['mode'] = mode_dictionary[mode_data[0]]
+    else:
+        logger.error("Invalid mode {0}".format(mode_data[0]))
     status_body[0]['fields']['grid_voltage'] = float(status_data[0])
     status_body[0]['fields']['grid_frequency'] = float(status_data[1])
     status_body[0]['fields']['ac_output_voltage'] = float(status_data[2])
@@ -266,7 +253,7 @@ def populate_ratings_data(ratings_data, client):
     {
         "measurement": "system_rating",
         "tags": {
-            "host": "test_installation1"
+            "installation": config.INSTALLATION,
             },
         "fields": {
             "grid_voltage": 123.4,
@@ -332,9 +319,8 @@ def populate_data():
         if write_to_db:
             logger.info("Writing to database...")
             logger.debug('Mode data: {0}'.format(mode_data))
-            populate_mode_data(mode_data, influx_client)
             logger.debug('Status data: {0}'.format(status_data))
-            populate_status_data(status_data, influx_client)
+            populate_status_data(status_data, mode_data, influx_client)
             logger.debug('Ratings data: {0}'.format(ratings_data))
             populate_ratings_data(ratings_data, influx_client)
     except Exception as e:
@@ -353,11 +339,19 @@ def send_command_with_ack_reply(command):
 
 
 def perform_aggregations(start_date, end_date):
+    global influx_client
     try:
-        valid_start_date = datetime.strptime(start_date, '%Y/%m/%d').date()
-        valid_end_date = datetime.strptime(end_date, '%Y/%m/%d').date()
+        valid_start_date = datetime.strptime(start_date, '%Y/%m/%d')
+        valid_end_date = datetime.strptime(end_date, '%Y/%m/%d')
+        # TBC: set it to GMT+2? Now only add offset to time written to spreadsheet
+        valid_start_date = valid_start_date.replace(tzinfo=pytz.utc)
+        valid_end_date = valid_end_date.replace(tzinfo=pytz.utc)
         filename = valid_start_date.strftime("%y-%m-%d") + " to " +  valid_end_date.strftime("%y-%m-%d") + ".xlsx"
         logger.info("Filename selected: {0}".format(filename))
+        query_results = influx_client.query('select * from system_status where (\"mode\" = \'Battery\') and time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
+        for results in query_results:
+            logger.debug("{0} - {1} - {2} - {3} ".format(results['time'],
+            results['mode'], results['ac_output_w'], results['pv_input_voltage']))
     except ValueError:
         mb = QMessageBox ("Error",'Start {0} or end {1} date incorrect'.format(start_date, end_date),QMessageBox.Warning,QMessageBox.Ok,0,0)
         mb.exec_()
@@ -426,7 +420,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def generate_report(self):
         logger.info('Generate report Clicked: {0} - {1}'.format(self.report_from_edit.text(), self.report_to_edit.text()))
-        perform_aggregations(self.report_from_edit.text(), self.report_to_edit.text())
+        #perform_aggregations(self.report_from_edit.text(), self.report_to_edit.text())
+        perform_aggregations('2019/01/30', '2019/02/01')
 
 
 if __name__ == "__main__":
