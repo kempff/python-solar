@@ -340,6 +340,7 @@ def send_command_with_ack_reply(command):
 
 def perform_aggregations(start_date, end_date):
     global influx_client
+    heading_text = ['Time','Mode','AC output W','PV input V']
     try:
         valid_start_date = datetime.strptime(start_date, '%Y/%m/%d')
         valid_end_date = datetime.strptime(end_date, '%Y/%m/%d')
@@ -348,10 +349,33 @@ def perform_aggregations(start_date, end_date):
         valid_end_date = valid_end_date.replace(tzinfo=pytz.utc)
         filename = valid_start_date.strftime("%y-%m-%d") + " to " +  valid_end_date.strftime("%y-%m-%d") + ".xlsx"
         logger.info("Filename selected: {0}".format(filename))
+        book = Workbook()
+        book.create_sheet("All")
+        book.create_sheet("Battery")
+        book.create_sheet("Line")
+        sheet = book.get_sheet_by_name("Battery")
+        sheet.append(heading_text)
         query_results = influx_client.query('select * from system_status where (\"mode\" = \'Battery\') and time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
         for results in query_results:
             logger.debug("{0} - {1} - {2} - {3} ".format(results['time'],
             results['mode'], results['ac_output_w'], results['pv_input_voltage']))
+        query_results = influx_client.query('select * from system_status where (\"mode\" = \'Line\') and time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
+        sheet = book.get_sheet_by_name("Line")
+        sheet.append(heading_text)
+        for results in query_results:
+            logger.debug("{0} - {1} - {2} - {3} ".format(results['time'],
+            results['mode'], results['ac_output_w'], results['pv_input_voltage']))
+        query_results = influx_client.query('select * from system_status where time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
+        sheet = book.get_sheet_by_name("All")
+        sheet.append(heading_text)
+        for results in query_results:
+            logger.debug("{0} - {1} - {2} - {3} ".format(results['time'],
+            results['mode'], results['ac_output_w'], results['pv_input_voltage']))
+        # Remove default sheet
+        sheet = book.get_sheet_by_name("Sheet")
+        book.remove_sheet(sheet)
+        book.save(filename)
+
     except ValueError:
         mb = QMessageBox ("Error",'Start {0} or end {1} date incorrect'.format(start_date, end_date),QMessageBox.Warning,QMessageBox.Ok,0,0)
         mb.exec_()
