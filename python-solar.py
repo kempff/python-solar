@@ -338,9 +338,15 @@ def send_command_with_ack_reply(command):
         logger.error('Command {0} error, reply {1}'.format(command,result))
 
 
+def write_row(the_sheet, the_data):
+    the_row = [the_data['time'], the_data['mode'], the_data['ac_output_w'], the_data['pv_input_voltage']]
+    logger.debug(the_row)
+    the_sheet.append(the_row)
+
 def perform_aggregations(start_date, end_date):
     global influx_client
-    heading_text = ['Time','Mode','AC output W','PV input V']
+    
+    heading_text = ['Time','Mode','AC output W','PV input V','','Total W','Total h','kWh']
     try:
         valid_start_date = datetime.strptime(start_date, '%Y/%m/%d')
         valid_end_date = datetime.strptime(end_date, '%Y/%m/%d')
@@ -355,22 +361,29 @@ def perform_aggregations(start_date, end_date):
         book.create_sheet("Line")
         sheet = book.get_sheet_by_name("Battery")
         sheet.append(heading_text)
-        query_results = influx_client.query('select * from system_status where (\"mode\" = \'Battery\') and time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
+        query_results = list(influx_client.query('select * from system_status where (\"mode\" = \'Battery\') and time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points())
         for results in query_results:
-            logger.debug("{0} - {1} - {2} - {3} ".format(results['time'],
-            results['mode'], results['ac_output_w'], results['pv_input_voltage']))
+            write_row(sheet, results)
+        print(query_results[-1]["time"])
+        print(query_results[0]["time"])
+        
+        2019-01-31T19:59:05.129685049Z
+2019-01-31T18:39:19.019480384Z
+
+        end_time_db = time.strptime("", query_results[-1]["time"])
+        start_time_db = time.strptime("", query_results[0]["time"])
+        total_time =  end_time_db - start_time_db
+        print(total_time)
         query_results = influx_client.query('select * from system_status where (\"mode\" = \'Line\') and time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
         sheet = book.get_sheet_by_name("Line")
         sheet.append(heading_text)
         for results in query_results:
-            logger.debug("{0} - {1} - {2} - {3} ".format(results['time'],
-            results['mode'], results['ac_output_w'], results['pv_input_voltage']))
+            write_row(sheet, results)
         query_results = influx_client.query('select * from system_status where time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
         sheet = book.get_sheet_by_name("All")
         sheet.append(heading_text)
         for results in query_results:
-            logger.debug("{0} - {1} - {2} - {3} ".format(results['time'],
-            results['mode'], results['ac_output_w'], results['pv_input_voltage']))
+            write_row(sheet, results)
         # Remove default sheet
         sheet = book.get_sheet_by_name("Sheet")
         book.remove_sheet(sheet)
