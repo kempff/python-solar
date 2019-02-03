@@ -127,7 +127,7 @@
           "measurement": "system_status",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"battery_capacity\") FROM \"system_status\" WHERE (\"host\" = 'test_installation1')",
+          "query": "SELECT last(\"battery_capacity\") FROM \"system_status\" WHERE (\"installation\" = 'test_installation1')",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -147,7 +147,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -262,7 +262,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -378,7 +378,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -500,7 +500,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -546,8 +546,8 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 5,
-        "x": 15,
+        "w": 4,
+        "x": 16,
         "y": 0
       },
       "id": 21,
@@ -622,7 +622,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -738,7 +738,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -746,7 +746,7 @@
         }
       ],
       "thresholds": "",
-      "title": "Battery rating",
+      "title": "Battery under Voltage",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -854,7 +854,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -976,7 +976,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -1022,8 +1022,8 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 5,
-        "x": 15,
+        "w": 4,
+        "x": 16,
         "y": 3
       },
       "id": 23,
@@ -1077,7 +1077,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "system_rating",
+          "measurement": "system_status",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1098,7 +1098,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -1214,7 +1214,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -1330,7 +1330,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -1446,7 +1446,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -1562,7 +1562,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -1678,7 +1678,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -1738,5 +1738,5 @@
   "timezone": "",
   "title": "Solar monitor",
   "uid": "TgHAmwzgk",
-  "version": 35
+  "version": 36
 }

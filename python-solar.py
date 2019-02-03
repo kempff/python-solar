@@ -350,14 +350,15 @@ def write_row(the_sheet, the_data):
     timestamp = convert_timestamp_to_datetime(the_data['time'])
     timestamp += timedelta(hours=config.TIME_OFFSET)
     the_row = [str(timestamp), the_data['mode'], the_data['ac_output_w'], the_data['pv_input_voltage']]
-    logger.debug(the_row)
+    # logger.debug(the_row)
     the_sheet.append(the_row)
 
 
 def calculate_total_time(start_time, end_time):
     end_time_dt = convert_timestamp_to_datetime(end_time)
     start_time_dt = convert_timestamp_to_datetime(start_time)
-    return end_time_dt - start_time_dt
+    time_diff = end_time_dt - start_time_dt
+    return time_diff.total_seconds() 
     
 
 def perform_aggregations(start_date, end_date):
@@ -367,6 +368,10 @@ def perform_aggregations(start_date, end_date):
     db_queries = {  "Battery" : "select * from system_status where (\"mode\" = \'Battery\') and time >= \'{0}\' and time <= \'{1}\'",
                     "Line" : 'select * from system_status where (\"mode\" = \'Line\') and time >= \'{0}\' and time <= \'{1}\'',
                     "All" : 'select * from system_status where time >= \'{0}\' and time <= \'{1}\''
+    }
+    total_time = { "Battery": 0,
+                   "Line": 0,
+                   "All": 0
     }
     columns = ['B','C','D','F','G','I']
     
@@ -381,6 +386,14 @@ def perform_aggregations(start_date, end_date):
         filename = valid_start_date.strftime("%y-%m-%d") + " to " +  valid_end_date.strftime("%y-%m-%d") + ".xlsx"
         logger.info("Filename selected: {0}".format(filename))
         book = Workbook()
+        # First calculate total time dictionary using the "All" query. Check times between elements, ignoring the last one (therefore [:-1]).
+        query_results = list(influx_client.query(db_queries["All"].format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points())
+        for i, results in enumerate(query_results[:-1]):
+            the_time = calculate_total_time(results["time"], query_results[i+1]["time"])
+            total_time[results["mode"]] += the_time
+            total_time["All"] += the_time
+        
+        # Now filter according to mode and create separate sheets in spreadsheet
         for key in db_queries.keys():
             book.create_sheet(key)
             sheet = book.get_sheet_by_name(key)
@@ -391,19 +404,16 @@ def perform_aggregations(start_date, end_date):
                 for results in query_results:
                     write_row(sheet, results)
                     total_watts += int(results['ac_output_w'])
-                # TODO calculate total time instead by taking difference of time between measurements and using that. 
-                # TODO NB this will have to be for the ALL query (dictionary of results per type) and then used by the rest
-                total_time = calculate_total_time(query_results[0]["time"], query_results[-1]["time"])
                 sheet['F2'] = str(total_watts/1000.0)
                 if len(query_results) is  not 0:
                     avg_kw = total_watts/1000.0/len(query_results)
                 else:
                     avg_kw = 0
                 sheet['G2'] = str(avg_kw)
-                sheet['H2'] = str(total_time)
+                sheet['H2'] = str(total_time[key])
                 # / 3600.0 to get from seconds to hours
                 if total_time is not 0:
-                    kwh = avg_kw*total_time.total_seconds()/3600.0
+                    kwh = avg_kw*total_time[key]/3600.0
                 else:
                     kwh = 0
                 sheet['I2'] = kwh

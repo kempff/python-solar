@@ -128,7 +128,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -171,7 +171,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -214,7 +214,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -257,7 +257,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -326,45 +326,6 @@
       "type": "alertlist"
     },
     {
-      "alert": {
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                40
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "E",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "message": "",
-        "name": "Voltages alert",
-        "noDataState": "no_data",
-        "notifications": [
-          {
-            "id": 1
-          }
-        ]
-      },
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -377,6 +338,213 @@
         "y": 7
       },
       "id": 2,
+      "legend": {
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Battery",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "system_status",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "E",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "battery_voltage"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "max"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "installation",
+              "operator": "=",
+              "value": "test_installation1"
+            }
+          ]
+        },
+        {
+          "alias": "PV input voltage",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "system_status",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "F",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pv_input_voltage"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "installation",
+              "operator": "=",
+              "value": "test_installation1"
+            }
+          ]
+        },
+        {
+          "alias": "SCC battery voltage",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "system_status",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "G",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "scc_battery_voltage"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "installation",
+              "operator": "=",
+              "value": "test_installation1"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "DC Voltages",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Volt",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 27,
       "legend": {
         "avg": true,
         "current": false,
@@ -420,7 +588,7 @@
           "measurement": "system_status",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"grid_voltage\") FROM \"system_status\" WHERE (\"host\" = 'test_installation1') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT mean(\"grid_voltage\") FROM \"system_status\" WHERE (\"installation\" = 'test_installation1') AND $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -440,7 +608,7 @@
           ],
           "tags": [
             {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
@@ -483,243 +651,18 @@
           ],
           "tags": [
             {
-              "key": "host",
-              "operator": "=",
-              "value": "test_installation1"
-            }
-          ]
-        },
-        {
-          "alias": "Battery Recharge",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system_status",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT max(\"battery_recharge_voltage\") FROM \"system_status\" WHERE (\"host\" = 'test_installation1') AND $timeFilter GROUP BY time($__interval) fill(null)",
-          "rawQuery": false,
-          "refId": "C",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "battery_recharge_voltage"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "max"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "host",
-              "operator": "=",
-              "value": "test_installation1"
-            }
-          ]
-        },
-        {
-          "alias": "Battery Bulk",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system_status",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "D",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "battery_bulk_voltage"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "max"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "host",
-              "operator": "=",
-              "value": "test_installation1"
-            }
-          ]
-        },
-        {
-          "alias": "Battery",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system_status",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "E",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "battery_voltage"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "max"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "host",
-              "operator": "=",
-              "value": "test_installation1"
-            }
-          ]
-        },
-        {
-          "alias": "PV input voltage",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system_status",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "F",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "pv_input_voltage"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "host",
-              "operator": "=",
-              "value": "test_installation1"
-            }
-          ]
-        },
-        {
-          "alias": "SCC battery voltage",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system_status",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "G",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "scc_battery_voltage"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "host",
+              "key": "installation",
               "operator": "=",
               "value": "test_installation1"
             }
           ]
         }
       ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "lt",
-          "value": 40
-        }
-      ],
+      "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Voltages",
+      "title": "AC Voltages",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -765,7 +708,7 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -796,5 +739,5 @@
   "timezone": "",
   "title": "Solar monitor Graphs",
   "uid": "NqLvdIiRk",
-  "version": 4
+  "version": 11
 }
