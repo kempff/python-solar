@@ -14,7 +14,7 @@ from PyQt4.QtGui import QFileDialog
 from PyQt4.QtCore import pyqtSlot
 from ui.python_ui import Ui_MainWindow
 import crc16
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pytz
 from openpyxl import Workbook
 import sys
@@ -338,33 +338,44 @@ def send_command_with_ack_reply(command):
         logger.error('Command {0} error, reply {1}'.format(command,result))
 
 
+def convert_timestamp_to_datetime(in_time):
+    # Remove nanoseconds and 'Z'
+    in_time = in_time[:-4]
+    the_time = datetime.strptime(in_time,"%Y-%m-%dT%H:%M:%S.%f")
+    return the_time
+
+
 def write_row(the_sheet, the_data):
-    the_row = [the_data['time'], the_data['mode'], the_data['ac_output_w'], the_data['pv_input_voltage']]
+    # Add offset to time written to spreadsheet
+    timestamp = convert_timestamp_to_datetime(the_data['time'])
+    timestamp += timedelta(hours=config.TIME_OFFSET)
+    the_row = [str(timestamp), the_data['mode'], the_data['ac_output_w'], the_data['pv_input_voltage']]
     logger.debug(the_row)
     the_sheet.append(the_row)
 
 
 def calculate_total_time(start_time, end_time):
-    # Remove nanoseconds and 'Z'
-    end_time = end_time[:-4]
-    start_time = start_time[:-4]
-    end_time_dt = datetime.strptime(end_time,"%Y-%m-%dT%H:%M:%S.%f")
-    start_time_dt = datetime.strptime(start_time,"%Y-%m-%dT%H:%M:%S.%f")
+    end_time_dt = convert_timestamp_to_datetime(end_time)
+    start_time_dt = convert_timestamp_to_datetime(start_time)
     return end_time_dt - start_time_dt
     
 
 def perform_aggregations(start_date, end_date):
     global influx_client
     
-    heading_text = ['Time','Mode','AC output W','PV input V','','Total W','Total h','kWh']
+    heading_text = ['Time','Mode','AC output W','PV input V','','Total kW','Average kW','Total time','kWh']
     db_queries = {  "Battery" : "select * from system_status where (\"mode\" = \'Battery\') and time >= \'{0}\' and time <= \'{1}\'",
                     "Line" : 'select * from system_status where (\"mode\" = \'Line\') and time >= \'{0}\' and time <= \'{1}\'',
                     "All" : 'select * from system_status where time >= \'{0}\' and time <= \'{1}\''
     }
+    columns = ['B','C','D','F','G','I']
     
     try:
-        valid_start_date = datetime.strptime(start_date, '%Y/%m/%d')
-        valid_end_date = datetime.strptime(end_date, '%Y/%m/%d')
+        # Start from 0 hours util last hour for the selected dates
+        start_date += " 00:00:00"
+        valid_start_date = datetime.strptime(start_date, '%Y/%m/%d %H:%M:%S')
+        end_date += " 23:59:59"
+        valid_end_date = datetime.strptime(end_date, '%Y/%m/%d %H:%M:%S')
         valid_start_date = valid_start_date.replace(tzinfo=pytz.utc)
         valid_end_date = valid_end_date.replace(tzinfo=pytz.utc)
         filename = valid_start_date.strftime("%y-%m-%d") + " to " +  valid_end_date.strftime("%y-%m-%d") + ".xlsx"
@@ -375,14 +386,33 @@ def perform_aggregations(start_date, end_date):
             sheet = book.get_sheet_by_name(key)
             sheet.append(heading_text)
             query_results = list(influx_client.query(db_queries[key].format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points())
+            total_watts = 0
             if query_results:
                 for results in query_results:
-                    # TBC: set it to GMT+2? Now only add offset to time written to spreadsheet
                     write_row(sheet, results)
-                total_time = calculate_total_time(query_results[-1]["time"], query_results[0]["time"])
-                print(total_time)
-                sheet['G2'] = str(total_time)
-    
+                    total_watts += int(results['ac_output_w'])
+                # TODO calculate total time instead by taking difference of time between measurements and using that. 
+                # TODO NB this will have to be for the ALL query (dictionary of results per type) and then used by the rest
+                total_time = calculate_total_time(query_results[0]["time"], query_results[-1]["time"])
+                sheet['F2'] = str(total_watts/1000.0)
+                if len(query_results) is  not 0:
+                    avg_kw = total_watts/1000.0/len(query_results)
+                else:
+                    avg_kw = 0
+                sheet['G2'] = str(avg_kw)
+                sheet['H2'] = str(total_time)
+                # / 3600.0 to get from seconds to hours
+                if total_time is not 0:
+                    kwh = avg_kw*total_time.total_seconds()/3600.0
+                else:
+                    kwh = 0
+                sheet['I2'] = kwh
+            # Set time columns wider than the other
+            sheet.column_dimensions['A'].width = 20
+            sheet.column_dimensions['H'].width = 15
+            for column in columns:
+                sheet.column_dimensions[column].width = 12
+            
         # Remove default sheet
         sheet = book.get_sheet_by_name("Sheet")
         book.remove_sheet(sheet)
@@ -456,8 +486,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def generate_report(self):
         logger.info('Generate report Clicked: {0} - {1}'.format(self.report_from_edit.text(), self.report_to_edit.text()))
-        #perform_aggregations(self.report_from_edit.text(), self.report_to_edit.text())
-        perform_aggregations('2019/01/30', '2019/02/01')
+        perform_aggregations(self.report_from_edit.text(), self.report_to_edit.text())
 
 
 if __name__ == "__main__":
