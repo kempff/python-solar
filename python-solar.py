@@ -343,47 +343,46 @@ def write_row(the_sheet, the_data):
     logger.debug(the_row)
     the_sheet.append(the_row)
 
+
+def calculate_total_time(start_time, end_time):
+    # Remove nanoseconds and 'Z'
+    end_time = end_time[:-4]
+    start_time = start_time[:-4]
+    end_time_dt = datetime.strptime(end_time,"%Y-%m-%dT%H:%M:%S.%f")
+    start_time_dt = datetime.strptime(start_time,"%Y-%m-%dT%H:%M:%S.%f")
+    return end_time_dt - start_time_dt
+    
+
 def perform_aggregations(start_date, end_date):
     global influx_client
     
     heading_text = ['Time','Mode','AC output W','PV input V','','Total W','Total h','kWh']
+    db_queries = {  "Battery" : "select * from system_status where (\"mode\" = \'Battery\') and time >= \'{0}\' and time <= \'{1}\'",
+                    "Line" : 'select * from system_status where (\"mode\" = \'Line\') and time >= \'{0}\' and time <= \'{1}\'',
+                    "All" : 'select * from system_status where time >= \'{0}\' and time <= \'{1}\''
+    }
+    
     try:
         valid_start_date = datetime.strptime(start_date, '%Y/%m/%d')
         valid_end_date = datetime.strptime(end_date, '%Y/%m/%d')
-        # TBC: set it to GMT+2? Now only add offset to time written to spreadsheet
         valid_start_date = valid_start_date.replace(tzinfo=pytz.utc)
         valid_end_date = valid_end_date.replace(tzinfo=pytz.utc)
         filename = valid_start_date.strftime("%y-%m-%d") + " to " +  valid_end_date.strftime("%y-%m-%d") + ".xlsx"
         logger.info("Filename selected: {0}".format(filename))
         book = Workbook()
-        book.create_sheet("All")
-        book.create_sheet("Battery")
-        book.create_sheet("Line")
-        sheet = book.get_sheet_by_name("Battery")
-        sheet.append(heading_text)
-        query_results = list(influx_client.query('select * from system_status where (\"mode\" = \'Battery\') and time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points())
-        for results in query_results:
-            write_row(sheet, results)
-        print(query_results[-1]["time"])
-        print(query_results[0]["time"])
-        
-        2019-01-31T19:59:05.129685049Z
-2019-01-31T18:39:19.019480384Z
-
-        end_time_db = time.strptime("", query_results[-1]["time"])
-        start_time_db = time.strptime("", query_results[0]["time"])
-        total_time =  end_time_db - start_time_db
-        print(total_time)
-        query_results = influx_client.query('select * from system_status where (\"mode\" = \'Line\') and time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
-        sheet = book.get_sheet_by_name("Line")
-        sheet.append(heading_text)
-        for results in query_results:
-            write_row(sheet, results)
-        query_results = influx_client.query('select * from system_status where time >= \'{0}\' and time <= \'{1}\''.format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points()
-        sheet = book.get_sheet_by_name("All")
-        sheet.append(heading_text)
-        for results in query_results:
-            write_row(sheet, results)
+        for key in db_queries.keys():
+            book.create_sheet(key)
+            sheet = book.get_sheet_by_name(key)
+            sheet.append(heading_text)
+            query_results = list(influx_client.query(db_queries[key].format(valid_start_date.isoformat(), valid_end_date.isoformat())).get_points())
+            if query_results:
+                for results in query_results:
+                    # TBC: set it to GMT+2? Now only add offset to time written to spreadsheet
+                    write_row(sheet, results)
+                total_time = calculate_total_time(query_results[-1]["time"], query_results[0]["time"])
+                print(total_time)
+                sheet['G2'] = str(total_time)
+    
         # Remove default sheet
         sheet = book.get_sheet_by_name("Sheet")
         book.remove_sheet(sheet)
