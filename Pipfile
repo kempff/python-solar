@@ -6,10 +6,14 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-influxdb = "*"
-pyusb = "*"
-crc16 = "*"
-openpyxl = "*"
+influxdb = "==5.2.1"
+pyusb = "==1.0.2"
+crc16 = "==0.1.1"
+openpyxl = "==2.5.14"
+flask_httpauth = "==3.2.4"
+flask = "==1.0.2"
+flask_restful = "==0.3.7"
+gunicorn = "==19.9.0"
 
 [requires]
 python_version = "3.5.3"
