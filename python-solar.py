@@ -134,16 +134,20 @@ def process_result(command, result_data):
     result_dictionary = {'QMOD' : write_mode_data,
                          'QPIRI': write_ratings_data,
                          'QPIGS': write_status_data}
-    if result_data[0] is '(':
-        check_data = result_data[:-3].encode('utf-8')
-        rx_crc = result_data[-3:-1].encode('utf-8')
-        crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
-        if crc == rx_crc or debug_data:
-            result_dictionary[command](result_data[1:-3].split())
+    if result_data:
+        if result_data[0] is '(':
+            check_data = result_data[:-3].encode('utf-8')
+            rx_crc = result_data[-3:-1].encode('utf-8')
+            crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
+            if crc == rx_crc or debug_data:
+                result_dictionary[command](result_data[1:-3].split())
+            else:
+                logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
+                logger.error('Data: {0}'.format(result_data[:].encode('utf-8')))
         else:
-            logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
+            logger.error('Incorrect start byte for {0} command'.format(command))
     else:
-        logger.error('Incorrect start byte for {0} command'.format(command))
+        logger.error('No data for command {0}'.format(command))
 
 
 # Read data function (either from USB or file)
@@ -165,10 +169,12 @@ def read_data():
         result = get_result()  
         logger.debug(result)
         process_result('QMOD', result)
+        time.sleep(1)
         send_command(get_command('QPIGS'))
         result = get_result()
         logger.debug(result)
         process_result('QPIGS', result)
+        time.sleep(1)
         if request_ratings:
             send_command(get_command('QPIGS'))
             result = get_result()
@@ -318,11 +324,14 @@ def populate_data():
     try:
         if write_to_db:
             logger.info("Writing to database...")
-            logger.debug('Mode data: {0}'.format(mode_data))
-            logger.debug('Status data: {0}'.format(status_data))
-            populate_status_data(status_data, mode_data, influx_client)
-            logger.debug('Ratings data: {0}'.format(ratings_data))
-            populate_ratings_data(ratings_data, influx_client)
+            if len(mode_data) > 0:
+                logger.debug('Mode data: {0}'.format(mode_data))
+            if len(status_data) > 0:
+                logger.debug('Status data: {0}'.format(status_data))
+                populate_status_data(status_data, mode_data, influx_client)
+            if len(ratings_data) > 0:
+                logger.debug('Ratings data: {0}'.format(ratings_data))
+                populate_ratings_data(ratings_data, influx_client)
     except Exception as e:
         logger.error(str(e))
 
@@ -505,10 +514,11 @@ if __name__ == "__main__":
     process_thread = Thread(target=process_function)
     processing = True
     process_thread.start()
-    app = QApplication(sys.argv)
-    main_window = MainWindow()
-    main_window.show()
-    sys.exit(app.exec_())
+    process_thread.join()
+    #app = QApplication(sys.argv)
+    #main_window = MainWindow()
+    #main_window.show()
+    #sys.exit(app.exec_())
     processing = False
 
 
