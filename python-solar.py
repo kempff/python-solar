@@ -134,11 +134,14 @@ def process_result(command, result_data):
     result_dictionary = {'QMOD' : write_mode_data,
                          'QPIRI': write_ratings_data,
                          'QPIGS': write_status_data}
+    hex_data = ":".join("{:02x}".format(ord(c)) for c in result_data)
+    logger.debug("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
     if result_data:
         if result_data[0] is '(':
             check_data = result_data[:-3].encode('utf-8')
             rx_crc = result_data[-3:-1].encode('utf-8')
             crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
+            logger.debug('Check data len {0}'.format(len(check_data)))
             if crc == rx_crc or debug_data:
                 result_dictionary[command](result_data[1:-3].split())
             else:
