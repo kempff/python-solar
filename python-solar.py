@@ -615,7 +615,9 @@ class GetApplicationInfo(Resource):
             "installation": "Installation 1"
         }
     """
+    
     @staticmethod
+    
     def get():
         logger.info('{0} version {1}, Installation: {2}, '.format(APP_NAME, APP_VERSION, config.INSTALLATION))
         response = {
@@ -631,6 +633,10 @@ class GetApplicationInfo(Resource):
 api.add_resource(GetApplicationInfo, '/info')
 api.add_resource(SetLoggingLevel, '/log_level')
 
+logger.setLevel(logging.INFO)
+logger.info('Running {0} with host {1} and port {2}'.format(APP_NAME, config.FLASK_HTTP_HOST, config.FLASK_HTTP_PORT))
+logger.setLevel(config.LOG_LEVEL)
+
 
 if __name__ == "__main__":
     global processing
@@ -638,10 +644,6 @@ if __name__ == "__main__":
     process_thread = Thread(target=process_function)
     processing = True
     process_thread.start()
-    logger.setLevel(logging.INFO)
-    logger.info('Running {0} with host {1} and port {2}'.format(APP_NAME, config.FLASK_HTTP_HOST, config.FLASK_HTTP_PORT))
-    logger.setLevel(config.LOG_LEVEL)
-
     app.run(host=config.FLASK_HTTP_HOST,
             port=config.FLASK_HTTP_PORT)
     process_thread.join()
