@@ -10,11 +10,9 @@ influxdb = "==5.2.1"
 pyusb = "==1.0.2"
 crc16 = "==0.1.1"
 openpyxl = "==2.5.14"
-flask_httpauth = "==3.2.4"
-flask = "==1.0.2"
-flask_restful = "==0.3.7"
 gunicorn = "==19.9.0"
-flask-cors = "==3.0.4"
+django = "==2.1.7"
+psycopg2 = "==2.8.4"
 
 [requires]
 python_version = "3.5.3"

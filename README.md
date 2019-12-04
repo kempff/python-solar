@@ -4,7 +4,18 @@ Alternative to WatchPower software for RS-232 based solar power inverter. Writte
 
 ## Installation
 
-The project requires InfluxDB and Grafana.
+The project requires Django, Postgres, (InfluxDB) and Grafana.
+
+### Postgres
+
+* sudo apt install postgresql libpq-dev postgresql-client postgresql-client-common 
+* sudo su postgres
+* createuser solar -P --interactive
+* psql
+* create database solar;
+* \q 
+* exit
+
 
 ### Influx DB
 
@@ -22,3 +33,7 @@ The project requires InfluxDB and Grafana.
 
 Checking it out:
 Browse to localhost:3000, username and password admin/admin
+
+## Remote access
+
+Using _remote.it_
