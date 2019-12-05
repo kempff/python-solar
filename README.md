@@ -13,9 +13,23 @@ The project requires Django, Postgres, (InfluxDB) and Grafana.
 * createuser solar -P --interactive
 * psql
 * create database solar;
+* ALTER USER postgres with password '<your-pass>';
 * \q 
 * exit
 
+To connect thereafter:
+* psql -U postgres -h 127.0.0.1
+
+### Django
+
+* In python-solar: pipenv shell
+* django-admin startproject solar
+* Move directory to one level up
+* python manage.py startapp control
+* Edit settings.py and select 'django.db.backends.postgresql' as ENGINE
+* python manage.py migrate
+* python manage.py createsuperuser
+* python manage.py runserver
 
 ### Influx DB
 

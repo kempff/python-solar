@@ -28,7 +28,7 @@ app = Flask(__name__)
 api = Api(app)
 auth = HTTPBasicAuth()
 
-APP_VERSION = "0.0.1"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.0.2"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Configure DB
