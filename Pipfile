@@ -6,7 +6,8 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-influxdb = "==5.2.1"
+structlog = "==19.1.0"
+colorama = "==0.4.1"
 pyusb = "==1.0.2"
 crc16 = "==0.1.1"
 openpyxl = "==2.5.14"
@@ -15,4 +16,4 @@ django = "==2.1.7"
 psycopg2 = "==2.8.4"
 
 [requires]
-python_version = "3.5.3"
+python_version = "3.6"
