@@ -54,6 +54,60 @@ sudo service grafana-server restart
 Checking it out:
 Browse to localhost:3000, username and password admin/admin
 
+### Gunicorn
+
+* Create a Gunicorn systemd Service File
+
+_sudo nano /etc/systemd/system/gunicorn.service_
+
+```
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=sysadmin
+Group=sysadmin
+WorkingDirectory=/home/sysadmin/Projects/python-solar
+EnvironmentFile=/home/sysadmin/Projects/python-solar/.env
+ExecStart=/home/sysadmin/.local/share/virtualenvs/python-solar-DAj_LhDv/bin/gunicorn --access-logfile - --workers 3 --timeout 600 --bind unix:/home/sysadmin/Projects/python-solar/python-solar.sock solar.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+* _sudo systemctl start gunicorn_
+* _sudo systemctl enable gunicorn_
+* _sudo systemctl status gunicorn_
+
+### Nginx
+
+* _sudo apt-get install nginx_
+* _sudo nano /etc/nginx/sites-available/python-solar_
+
+```
+server {
+    listen 80;
+    server_name 127.0.0.1;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static {
+        root home/sysadmin/Projects/python-solar;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/sysadmin/Projects/python-solar/python-solar.sock;
+    }
+}
+```
+
+* _sudo ln -s /etc/nginx/sites-available/python-solar /etc/nginx/sites-enabled_
+* Test by: _sudo nginx -t_
+* _python manage.py collectstatic_
+
+
 ## Remote access
 
 Using _remote.it_

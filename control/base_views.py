@@ -23,6 +23,5 @@ class HomePageView(View):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         else:
-            context = {'message': f"Hello!"}
-            return render(request, "home.html", context=context)
+            return render(request, "home.html")
 
