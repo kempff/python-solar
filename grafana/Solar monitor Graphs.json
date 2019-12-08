@@ -81,7 +81,7 @@
       "lines": true,
       "linewidth": 1,
       "links": [],
-      "nullPointMode": "null",
+      "nullPointMode": "connected",
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -708,7 +708,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {
@@ -739,5 +739,5 @@
   "timezone": "",
   "title": "Solar monitor Graphs",
   "uid": "NqLvdIiRk",
-  "version": 11
+  "version": 15
 }

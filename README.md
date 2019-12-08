@@ -43,9 +43,13 @@ To connect thereafter:
 
 ### Grafana
 
-* wget https://dl.grafana.com/oss/release/grafana_5.4.3_armhf.deb 
-* sudo dpkg -i grafana_5.4.3_armhf.deb 
+* wget https://dl.grafana.com/oss/release/grafana_6.5.1_armhf.deb
+* sudo dpkg -i grafana_6.5.1_armhf.deb 
 * Auto start at startup: sudo update-rc.d grafana-server defaults
+* To enable embedding in iframe:
+sudo geany /etc/grafana/grafana.ini
+add allow_embedding=true under [security]
+sudo service grafana-server restart
 
 Checking it out:
 Browse to localhost:3000, username and password admin/admin
