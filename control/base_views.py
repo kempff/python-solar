@@ -16,12 +16,13 @@ from solar.struct_logger import StructLogger
 from solar.settings import APP_NAME, APP_VERSION
 
 the_logger = StructLogger()
-the_logger.print_app_info()
+the_logger.info(f'Running {APP_NAME} version {APP_VERSION}')
 
 class HomePageView(View):
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         else:
-            return render("home.html")
+            context = {'message': f"Hello!"}
+            return render(request, "home.html", context=context)
 

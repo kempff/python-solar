@@ -6,6 +6,8 @@ Alternative to WatchPower software for RS-232 based solar power inverter. Writte
 
 The project requires Django, Postgres, (InfluxDB) and Grafana.
 
+Note: when python modules gave installation errors upon _pipenv install_ run _pipenv shell_ without them in the _Pipfile_ and then run _pip install <modulename>_. Thereafter the shell can be exit and the modules added to the _Pipfile_.
+
 ### Postgres
 
 * sudo apt install postgresql libpq-dev postgresql-client postgresql-client-common 

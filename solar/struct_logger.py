@@ -49,11 +49,6 @@ class _StructLogger:
         file_handler.formatter = formatter
         self.logger.addHandler(file_handler)
 
-    def print_app_info(self):
-        self.logger.setLevel(logging.INFO)
-        self.logger.info(f'Running {self.app_name} version {APP_VERSION}')
-        self.logger.setLevel(int(DEFAULT_LOGGING_LEVEL))
-
     def critical(self, log_text):
         caller = getframeinfo(stack()[1][0])
         self.logger.critical(f'-< {os.path.basename(caller.filename)}:{caller.lineno} >- {log_text}')
