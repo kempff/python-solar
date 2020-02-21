@@ -1,12 +1,25 @@
 # python-solar
 
-Alternative to WatchPower software for RS-232 based solar power inverter. Written using Python and runs on a Raspberry Pi 3+.
+Alternative to WatchPower software for RS-232 based solar power inverter. Written using Python and runs on a Raspberry Pi 3+/ Pi 4.
 
 ## Installation
 
 The project requires Django, Postgres, (InfluxDB) and Grafana.
 
 Note: when python modules gave installation errors upon _pipenv install_ run _pipenv shell_ without them in the _Pipfile_ and then run _pip install <modulename>_. Thereafter the shell can be exit and the modules added to the _Pipfile_.
+
+### First time installation on PC
+
+* sudo apt-get install git git-flow
+* sudo apt install python3-pip
+* pip3 install pipenv
+* Add path to .bashrc where pipenv is installed (e.g. export PATH="/home/gkempff/.local/bin:$PATH")
+* git clone https://github.com/kempff/python-solar.git
+* cd python-solar
+* git flow init
+* git checkout develop (or other feature branch)
+* pipenv install
+* If crc16 and psycopg fails: pipenv shell, pip install crc16, pip install psycopg2-binary, exit, pipenv install
 
 ### Postgres
 
