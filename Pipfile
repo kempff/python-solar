@@ -15,7 +15,8 @@ django = "==2.1.7"
 psycopg2-binary = "==2.8.4"
 crc16 = "==0.1.1"
 celery = "==4.4.0"
-redis = "*"
+redis = "==3.4.1"
+influxdb = "==5.2.3"
 
 [requires]
 python_version = "3.6"

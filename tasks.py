@@ -1,15 +1,19 @@
 from celery import Celery
+from celery import task  
+
+# Internal imports
+from pythonsolar import start_processing
 
 app = Celery('tasks', broker='redis://guest@localhost//')
 
-@app.task
-def add(x, y):
+@task
+def start_solar():
     '''
-    Test task, call from another module with:
 
-    from tasks import add
-    add.delay(4, 40)
-    
+    from tasks import start_solar
+    start_solar.delay()
+
     '''
-    print(f'Adding {x} and {y}...')
-    return x + y
+    print(f'Starting solar processing...')
+    start_processing()
+    return True

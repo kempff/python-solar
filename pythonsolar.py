@@ -7,28 +7,14 @@ import time
 import solar_config as config
 import sys
 from logging.handlers import RotatingFileHandler
-from PyQt4.QtGui import QMainWindow
-from PyQt4.QtGui import QApplication
-from PyQt4.QtGui import QMessageBox
-from PyQt4.QtGui import QFileDialog
-from PyQt4.QtCore import pyqtSlot
-from ui.python_ui import Ui_MainWindow
 import crc16
 from datetime import datetime, date, timedelta
 import pytz
 from openpyxl import Workbook
 import sys
 import usb.core
-from flask import Flask, jsonify, request
-from flask_restful import Api, Resource
-from flask_httpauth import HTTPBasicAuth
 
-# Create a Flask web server with authentication
-app = Flask(__name__)
-api = Api(app)
-auth = HTTPBasicAuth()
-
-APP_VERSION = "0.0.2"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.0.3"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Configure DB
@@ -459,6 +445,7 @@ def process_function():
     global processing
     logger.info('Processing thread entry')
     while processing:
+        print('Processing')
         read_data()
         populate_data()
         time.sleep(config.PROCESS_TIME)
@@ -468,65 +455,6 @@ def process_function():
 logger.info("Program starts: Debug {0}".format(debug_data))
 if not debug_data:
     logger.info("USB info: {0}".format(usb_dev))
-
-
-class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
-        self.setupUi(self)
-        self.battery_recharge_v_button.clicked.connect(self.update_battery_recharge_v)
-        self.output_source_button.clicked.connect(self.update_output_source)
-        self.device_charge_button.clicked.connect(self.update_device_charge)
-        self.battery_cutoff_button.clicked.connect(self.update_battery_cutoff)
-        self.battery_constant_v_button.clicked.connect(self.update_battery_constant_v)
-        self.battery_floating_v_button.clicked.connect(self.update_battery_floating_v)
-        self.generate_report_button.clicked.connect(self.generate_report)
-        
-        
-    @pyqtSlot()
-    def update_battery_recharge_v(self):
-        logger.info('Recharge Clicked: {0}'.format(self.battery_recharge_v_edit.text()))
-        send_command_with_ack_reply('PBCV'+self.battery_recharge_v_edit.text())
-
-    @pyqtSlot()
-    def update_output_source(self):
-        output_sources = { 'Utility first': '00', 'Solar first': '01', 'SBU priority': '02'}
-        logger.info('Output source Clicked: {0}'.format(self.output_source_combo.currentText()))
-        send_command_with_ack_reply('POP'+output_sources[self.output_source_combo.currentText()])
-        
-    @pyqtSlot()
-    def update_device_charge(self):
-        output_sources = { 'Utility first': '00', 'Solar first': '01', 'Solar and utility': '02', 'Solar only': '03'}
-        logger.info('Device charge Clicked: {0}'.format(self.device_charge_combo.currentText()))
-        send_command_with_ack_reply('PCP'+output_sources[self.device_charge_combo.currentText()])
-        
-    @pyqtSlot()
-    def update_battery_cutoff(self):
-        logger.info('Battery cutoff Clicked: {0}'.format(self.battery_cutoff_edit.text()))
-        send_command_with_ack_reply('PSDV'+self.battery_cutoff_edit.text())
-        
-    @pyqtSlot()
-    def update_battery_constant_v(self):
-        logger.info('Battery constant V Clicked: {0}'.format(self.battery_constant_v_edit.text()))
-        send_command_with_ack_reply('PCVV'+self.battery_constant_v_edit.text())
-        
-    @pyqtSlot()
-    def update_battery_floating_v(self):
-        logger.info('Battery floating V Clicked: {0}'.format(self.battery_floating_v_edit.text()))
-        send_command_with_ack_reply('PBFT'+self.battery_floating_v_edit.text())
-        
-    @pyqtSlot()
-    def generate_report(self):
-        logger.info('Generate report Clicked: {0} - {1}'.format(self.report_from_edit.text(), self.report_to_edit.text()))
-        perform_aggregations(self.report_from_edit.text(), self.report_to_edit.text())
-
-
-# Flask related functions
-@auth.get_password
-def get_password(username):
-    if username == config.BASIC_AUTH_USERNAME:
-        return config.BASIC_AUTH_PASSWORD
-    return None
 
 # -----------------------------------------------------------------------
 # Log level configuration function
@@ -544,108 +472,18 @@ def set_log_level(input_data):
     else:
         return 'Invalid input: {0}'.format(input_data)
 
-class SetLoggingLevel(Resource):
-    """
-    @api {post} /log_level Set log level API
-    @apiVersion 1.0.0
-    @apiName Set log level API
-    @apiDescription The internal Python logging level is configured.
-    @apiGroup REST
-    @apiPermission Authenticated user
-
-    @apiParam (Request body) {text} level The logging level ("DEBUG", "INFO", "WARNING" or "ERROR")
-
-    @apiExample {json} Example usage (python):
-    api_header = {'Authorization': 'Basic ' + base64.b64encode(bytes(USER_KEY + ":" + USER_SECRET, 'ascii')).decode('ascii')}
-    data = json.dumps(dict(level="DEBUG"))
-    response = self.app.post("/log_level", data=data, headers=self.api_header,
-                             content_type='application/json')
-
-    @apiSuccess (Success 200) {integer} log_level The Python logging level value.
-
-    @apiSuccessExample {json} Success response example:
-        HTTP 200 OK
-        {
-            "log_level": 10
-        }
-    """
-    decorators = [auth.login_required]
-
-    @staticmethod
-    def post():
-
-        try:
-            request_data = request.get_json(force=True)
-            if request_data is None:
-                raise ValueError('No or incorrect JSON payload received.')
-
-            level = set_log_level(request_data['level'])
-            response = {
-                "log_level": level,
-            }
-        except Exception as e:
-            logger.error('Incorrect request: {0}'.format(e))
-            response = {
-                "error": str(e),
-            }
-        return jsonify(response)
-
-
-class GetApplicationInfo(Resource):
-    """
-    @api {get} /info Get application information
-    @apiVersion 1.0.0
-    @apiName Application information
-    @apiDescription The application information is returned via JSON message.
-    @apiGroup REST
-    @apiPermission Authenticated user
-
-    @apiExample {json} Example usage (python):
-    response = self.app.get("/info")
-
-    @apiSuccess (Success 200) {json} app_name Application name
-    @apiSuccess (Success 200) {json} app_version Application version
-    @apiSuccess (Success 200) {json} installation Installation identifier
-
-    @apiSuccessExample {json} Success response example:
-        HTTP 200 OK
-        {
-            "app_name": "solar_logger",
-            "app_version": "0.0.1",
-            "installation": "Installation 1"
-        }
-    """
-    
-    @staticmethod
-    
-    def get():
-        logger.info('{0} version {1}, Installation: {2}, '.format(APP_NAME, APP_VERSION, config.INSTALLATION))
-        response = {
-            "app_name": APP_NAME,
-            "app_version": APP_VERSION,
-            "installation": config.INSTALLATION,
-        }
-
-        return jsonify(response)
-
-
-# Add all the APIs
-api.add_resource(GetApplicationInfo, '/info')
-api.add_resource(SetLoggingLevel, '/log_level')
-
 logger.setLevel(logging.INFO)
 logger.info('Running {0} with host {1} and port {2}'.format(APP_NAME, config.FLASK_HTTP_HOST, config.FLASK_HTTP_PORT))
 logger.setLevel(config.LOG_LEVEL)
 
 
-if __name__ == "__main__":
+def start_processing():
     global processing
+    print('Creating thread...')
     # Run reading of data and writing to DB as a background thread
     process_thread = Thread(target=process_function)
     processing = True
     process_thread.start()
-    app.run(host=config.FLASK_HTTP_HOST,
-            port=config.FLASK_HTTP_PORT)
     process_thread.join()
     processing = False
 

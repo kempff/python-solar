@@ -1,6 +1,6 @@
 import os
 
-LOG_FILE_PATH = os.getenv('LOG_FILE_PATH','/home/pi/Projects/python-solar/log/')
+LOG_FILE_PATH = os.getenv('LOG_FILE_PATH','/tmp/')
 LOG_LEVEL = os.getenv('LOG_LEVEL','WARNING')
 PRINT_LOGS = bool(os.getenv('PRINT_LOGS', False))
 INFLUX_HOST = os.getenv('INFLUX_HOST','localhost')
