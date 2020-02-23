@@ -3,5 +3,8 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"python.pythonPath": "/home/gkempff/.local/share/virtualenvs/python-solar-wlhoUvcQ/bin/python"
+	}
 }

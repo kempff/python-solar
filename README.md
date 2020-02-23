@@ -28,7 +28,7 @@ Note: when python modules gave installation errors upon _pipenv install_ run _pi
 * createuser solar -P --interactive
 * psql
 * create database solar;
-* ALTER USER postgres with password '<your-pass>';
+* \password <enter new postgres password>
 * \q 
 * exit
 
@@ -37,35 +37,49 @@ To connect thereafter:
 
 ### Django
 
+* Setup DB connection in .env file (create file if it does not exist)
+    * POSTGRES_PASSWORD=<postgres password>
 * In python-solar: pipenv shell
-* django-admin startproject solar
-* Move directory to one level up
-* python manage.py startapp control
-* Edit settings.py and select 'django.db.backends.postgresql' as ENGINE
+* First time only:
+    * django-admin startproject solar
+    * Move directory to one level up
+    * python manage.py startapp control
+    * Edit settings.py and select 'django.db.backends.postgresql' as ENGINE
 * python manage.py migrate
 * python manage.py createsuperuser
 * python manage.py runserver
+* Open browser, login and browse to 'http://127.0.0.1:8000/admin/' and create users and groups
 
 ### Influx DB
 
-* wget https://dl.influxdata.com/influxdb/releases/influxdb-1.7.3_linux_armhf.tar.gz
-* tar xvfz influxdb-1.7.3_linux_armhf.tar.gz
-* Copied all the files to the root folder
+* On Pi: 
+    * wget https://dl.influxdata.com/influxdb/releases/influxdb-1.7.10_linux_armhf.tar.gz
+    * tar xvfz influxdb-1.7.10_linux_armhf.tar.gz
+    * Copied all the files to the root folder
+* On Ubuntu: 
+    * wget https://dl.influxdata.com/influxdb/releases/influxdb_1.7.10_amd64.deb
+    * sudo dpkg -i influxdb_1.7.10_amd64.deb
+
 * sudo service influxdb start
 * influx (should open the command prompt for the DB)
 
 ### Grafana
 
-* wget https://dl.grafana.com/oss/release/grafana_6.5.1_armhf.deb
-* sudo dpkg -i grafana_6.5.1_armhf.deb 
+* On Pi:
+    * wget https://dl.grafana.com/oss/release/grafana_6.6.2_armhf.deb
+    * sudo dpkg -i grafana_6.6.2_armhf.deb 
+* On Ubuntu:
+    * sudo apt-get install -y adduser libfontconfig1
+    * wget https://dl.grafana.com/oss/release/grafana_6.6.2_amd64.deb
+    * sudo dpkg -i grafana_6.6.2_amd64.deb    
 * Auto start at startup: sudo update-rc.d grafana-server defaults
 * To enable embedding in iframe:
-sudo geany /etc/grafana/grafana.ini
-add allow_embedding=true under [security]
-sudo service grafana-server restart
-
-Checking it out:
-Browse to localhost:3000, username and password admin/admin
+    * sudo geany /etc/grafana/grafana.ini
+    * add allow_embedding=true under [security]
+    * sudo service grafana-server restart
+* Browser to localhost:3000, username and password admin/admin
+* Add 'viewer' user with password 'grafana123' under 'Server admin' -> 'Users' menu
+* 
 
 ### Gunicorn
 
