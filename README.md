@@ -62,6 +62,7 @@ To connect thereafter:
 
 * sudo service influxdb start
 * influx (should open the command prompt for the DB)
+    * CREATE DATABASE solardb
 
 ### Grafana
 
@@ -78,8 +79,16 @@ To connect thereafter:
     * add allow_embedding=true under [security]
     * sudo service grafana-server restart
 * Browser to localhost:3000, username and password admin/admin
-* Add 'viewer' user with password 'grafana123' under 'Server admin' -> 'Users' menu
-* 
+    * Enter a new admin password when prompted
+    * Add 'viewer' user with password 'grafana123' under 'Server admin' -> 'Users' menu
+    * Add the connection to the solardb Influx database
+    * Select 'Import' in the 'Create' menu and upload the JSON files in the 'grafana' directory of the project
+
+## Remote access
+
+Options:
+* Using _remote.it_ to add a VNC connection
+* Expost the HTTP port with _remote.it_ and use Gunicorn and Nginx
 
 ### Gunicorn
 
@@ -135,6 +144,4 @@ server {
 * _python manage.py collectstatic_
 
 
-## Remote access
 
-Using _remote.it_

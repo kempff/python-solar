@@ -1,5 +1,6 @@
 /log
 *.xlsx
+*.pyc
 .env
 control/__pycache__/
 solar/__pycache__/
