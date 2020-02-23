@@ -84,6 +84,42 @@ To connect thereafter:
     * Add the connection to the solardb Influx database
     * Select 'Import' in the 'Create' menu and upload the JSON files in the 'grafana' directory of the project
 
+### Redis
+
+* Installation:
+    * wget http://download.redis.io/redis-stable.tar.gz
+    * tar xvzf redis-stable.tar.gz
+    * cd redis-stable
+    * make
+    * sudo make install
+* Test by:
+    * redis-server
+    * In another terminal: redis-cli ping (returns 'PONG')
+    * redis-cli shutdown (to stop server)
+* Installing to use an init script:
+    * sudo cp utils/redis_init_script /etc/init.d/redis_6379
+    * sudo mkdir /etc/redis
+    * sudo cp redis.conf /etc/redis/6379.conf
+    * sudo mkdir /var/redis
+    * sudo mkdir /var/redis/6379
+    * sudo nano /etc/redis/6379.conf
+        * Set __daemonize__ to yes (by default it is set to no)
+        * Set __pidfile__ to /var/run/redis_6379.pid 
+        * Set __logfile__ to /var/log/redis_6379.log
+        * Set __dir__ to /var/redis/6379 (very important step!)
+    * sudo update-rc.d redis_6379 defaults
+    * sudo /etc/init.d/redis_6379 start
+    * Testing installation:
+        * redis-cli ping (returns 'PONG')
+        * redis-cli save (DB saved to '/var/redis/6379/dump.rdb')
+
+### Celery
+
+* pipenv shell
+* pip install Celery
+* To execute:
+    * celery -A tasks worker --loglevel=info
+
 ## Remote access
 
 Options:
