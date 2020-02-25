@@ -73,7 +73,9 @@ To connect thereafter:
     * sudo apt-get install -y adduser libfontconfig1
     * wget https://dl.grafana.com/oss/release/grafana_6.6.2_amd64.deb
     * sudo dpkg -i grafana_6.6.2_amd64.deb    
-* Auto start at startup: sudo update-rc.d grafana-server defaults
+* Auto start at startup: 
+    * sudo update-rc.d grafana-server defaults
+    * sudo systemctl enable grafana-server.service
 * To enable embedding in iframe:
     * sudo geany /etc/grafana/grafana.ini
     * add allow_embedding=true under [security]
@@ -117,8 +119,8 @@ To connect thereafter:
 
 * pipenv shell
 * pip install Celery
-* To execute:
-    * celery -A tasks worker --loglevel=info
+* To execute (saving celery logs to _/tmp/solar.log_):
+    * celery -A tasks worker --loglevel=info -f /tmp/solar.log
 
 ## Remote access
 

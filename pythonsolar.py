@@ -445,7 +445,7 @@ def process_function():
     global processing
     logger.info('Processing thread entry')
     while processing:
-        print('Processing')
+        logger.info('Processing data...')
         read_data()
         populate_data()
         time.sleep(config.PROCESS_TIME)
@@ -479,7 +479,7 @@ logger.setLevel(config.LOG_LEVEL)
 
 def start_processing():
     global processing
-    print('Creating thread...')
+    logger.info('Creating thread...')
     # Run reading of data and writing to DB as a background thread
     process_thread = Thread(target=process_function)
     processing = True
