@@ -53,9 +53,10 @@ To connect thereafter:
 ### Influx DB
 
 * On Pi: 
-    * wget https://dl.influxdata.com/influxdb/releases/influxdb-1.7.10_linux_armhf.tar.gz
-    * tar xvfz influxdb-1.7.10_linux_armhf.tar.gz
-    * Copied all the files to the root folder
+    * wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+    * source /etc/os-release
+    * sudo apt-get update && sudo apt-get install influxdb
+
 * On Ubuntu: 
     * wget https://dl.influxdata.com/influxdb/releases/influxdb_1.7.10_amd64.deb
     * sudo dpkg -i influxdb_1.7.10_amd64.deb
@@ -67,8 +68,8 @@ To connect thereafter:
 ### Grafana
 
 * On Pi:
-    * wget https://dl.grafana.com/oss/release/grafana_6.6.2_armhf.deb
-    * sudo dpkg -i grafana_6.6.2_armhf.deb 
+    * wget https://dl.grafana.com/oss/release/grafana-rpi_6.6.2_armhf.deb
+    * sudo dpkg -i grafana-rpi_6.6.2_armhf.deb
 * On Ubuntu:
     * sudo apt-get install -y adduser libfontconfig1
     * wget https://dl.grafana.com/oss/release/grafana_6.6.2_amd64.deb
@@ -82,6 +83,7 @@ To connect thereafter:
     * sudo service grafana-server restart
 * Browser to localhost:3000, username and password admin/admin
     * Enter a new admin password when prompted
+    * Add the InfluxDB datasource
     * Add 'viewer' user with password 'grafana123' under 'Server admin' -> 'Users' menu
     * Add the connection to the solardb Influx database
     * Select 'Import' in the 'Create' menu and upload the JSON files in the 'grafana' directory of the project
