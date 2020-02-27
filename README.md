@@ -88,6 +88,15 @@ To connect thereafter:
     * Add the connection to the solardb Influx database
     * Select 'Import' in the 'Create' menu and upload the JSON files in the 'grafana' directory of the project
 
+### USB
+
+* lsusb:
+    _Bus 001 Device 007: ID 0665:5161 Cypress Semiconductor USB to Serial_
+* Add the vendor and product
+    * _sudo nano /etc/udev/rules.d/99-solar.rules_
+    * SUBSYSTEM=="usb", ATTR{idVendor}=="0665", ATTR{idProduct}=="5161", MODE="666"
+* _sudo udevadm trigger_
+
 ### Redis
 
 * Installation:
@@ -95,6 +104,7 @@ To connect thereafter:
     * tar xvzf redis-stable.tar.gz
     * cd redis-stable
     * make
+        * Note: On the Raspberry Pi 4 the make failed, had to add _-latomic_ to the _src/Makefile_ for _redis_server_
     * sudo make install
 * Test by:
     * redis-server
@@ -122,7 +132,8 @@ To connect thereafter:
 * pipenv shell
 * pip install Celery
 * To execute (saving celery logs to _/tmp/solar.log_):
-    * celery -A tasks worker --loglevel=info -f /tmp/solar.log
+    * python manage.py runserver
+    * In another terminal: celery -A tasks worker --loglevel=info -f /tmp/solar.log
 
 ## Remote access
 
