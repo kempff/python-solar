@@ -131,9 +131,16 @@ To connect thereafter:
 
 * pipenv shell
 * pip install Celery
+
+## Running the application
+
 * To execute (saving celery logs to _/tmp/solar.log_):
-    * python manage.py runserver
-    * In another terminal: celery -A tasks worker --loglevel=info -f /tmp/solar.log
+    * pipenv shell
+    * celery -A tasks worker --loglevel=info -f /tmp/solar.log
+    * In another terminal: 
+        * pipenv shell 
+        * python manage.py runserver
+
 
 ## Remote access
 

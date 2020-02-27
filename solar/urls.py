@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include 
 
+# Local imports
+from tasks import start_solar
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('control.urls')),
@@ -30,3 +33,6 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += [
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
+# Start the processing thread via Celery
+start_solar.delay()

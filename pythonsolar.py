@@ -23,7 +23,7 @@ influx_client = InfluxDBClient(config.INFLUX_HOST, config.INFLUX_PORT, database=
 debug_data = config.DEBUG_MODE
 write_to_db = True
 request_ratings = True              # Flag to request ratings data, only when a command was sent and at startup
-
+processing = False
 
 if debug_data:
     # Open the files for reading
@@ -479,12 +479,13 @@ logger.setLevel(config.LOG_LEVEL)
 
 def start_processing():
     global processing
-    logger.info('Creating thread...')
-    # Run reading of data and writing to DB as a background thread
-    process_thread = Thread(target=process_function)
-    processing = True
-    process_thread.start()
-    process_thread.join()
-    processing = False
+    if not processing:
+        logger.info('Creating thread...')
+        # Run reading of data and writing to DB as a background thread
+        process_thread = Thread(target=process_function)
+        processing = True
+        process_thread.start()
+        process_thread.join()
+        processing = False
 
 
