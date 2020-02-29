@@ -146,10 +146,15 @@ To connect thereafter:
 
 Options:
 * Using _remote.it_ to add a VNC connection
+    * run _sudo connectd_installer_
+    * Setup SSH, HTTP and VNC
 * Expost the HTTP port with _remote.it_ and use Gunicorn and Nginx
 
 ### Gunicorn
 
+* _pipenv shell_
+* _which gunicorn_
+* Copy pathname to be use in Gunicorn service file (<gunicorn path> below)
 * Create a Gunicorn systemd Service File
 
 _sudo nano /etc/systemd/system/gunicorn.service_
@@ -160,11 +165,11 @@ Description=gunicorn daemon
 After=network.target
 
 [Service]
-User=sysadmin
-Group=sysadmin
-WorkingDirectory=/home/sysadmin/Projects/python-solar
-EnvironmentFile=/home/sysadmin/Projects/python-solar/.env
-ExecStart=/home/sysadmin/.local/share/virtualenvs/python-solar-DAj_LhDv/bin/gunicorn --access-logfile - --workers 3 --timeout 600 --bind unix:/home/sysadmin/Projects/python-solar/python-solar.sock solar.wsgi:application
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/python-solar
+EnvironmentFile=/home/pi/python-solar/.env
+ExecStart=<gunicorn path> --access-logfile - --workers 3 --timeout 600 --bind unix:/home/pi/python-solar/python-solar.sock solar.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -187,19 +192,25 @@ server {
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static {
-        root home/sysadmin/Projects/python-solar;
+        root home/pi/python-solar;
     }
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/home/sysadmin/Projects/python-solar/python-solar.sock;
+        proxy_pass http://unix:/home/pi/python-solar/python-solar.sock;
     }
 }
 ```
 
 * _sudo ln -s /etc/nginx/sites-available/python-solar /etc/nginx/sites-enabled_
 * Test by: _sudo nginx -t_
+* _pipenv shell_
 * _python manage.py collectstatic_
+
+If default nginx screen is displayed:
+
+* _sudo rm /etc/nginx/sites-enabled/default_
+* _sudo service nginx restart_
 
 
 
