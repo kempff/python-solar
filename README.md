@@ -188,7 +188,8 @@ WantedBy=multi-user.target
 ```
 server {
     listen 80;
-    server_name 127.0.0.1;
+    access_log /home/pi/python_solar/logs/nginx-access.log;
+    error_log /home/pi/python_solar/logs/nginx-error.log;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static {
