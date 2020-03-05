@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_SOLAR",
-      "label": "Solar",
+      "name": "DS_INFLUXDB",
+      "label": "InfluxDB",
       "description": "",
       "type": "datasource",
       "pluginId": "influxdb",
@@ -14,25 +14,25 @@
       "type": "panel",
       "id": "alertlist",
       "name": "Alert List",
-      "version": "5.0.0"
+      "version": ""
     },
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "5.4.3"
+      "version": "6.6.2"
     },
     {
       "type": "panel",
       "id": "graph",
       "name": "Graph",
-      "version": "5.0.0"
+      "version": ""
     },
     {
       "type": "datasource",
       "id": "influxdb",
       "name": "InfluxDB",
-      "version": "5.0.0"
+      "version": "1.0.0"
     }
   ],
   "annotations": {
@@ -59,14 +59,16 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SOLAR}",
+      "datasource": "${DS_INFLUXDB}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 18,
         "x": 0,
         "y": 0
       },
+      "hiddenSeries": false,
       "id": 4,
       "legend": {
         "avg": true,
@@ -82,6 +84,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -91,49 +96,6 @@
       "stack": false,
       "steppedLine": false,
       "targets": [
-        {
-          "alias": "AC output (VA)",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system_status",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "ac_output_va"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "max"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "installation",
-              "operator": "=",
-              "value": "test_installation1"
-            }
-          ]
-        },
         {
           "alias": "AC output (W)",
           "groupBy": [
@@ -154,92 +116,6 @@
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "ac_output_w"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "max"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "installation",
-              "operator": "=",
-              "value": "test_installation1"
-            }
-          ]
-        },
-        {
-          "alias": "AC rating (VA)",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system_rating",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "C",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "ac_output_va"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "max"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "installation",
-              "operator": "=",
-              "value": "test_installation1"
-            }
-          ]
-        },
-        {
-          "alias": "AC rating (W)",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system_rating",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "D",
           "resultFormat": "time_series",
           "select": [
             [
@@ -307,6 +183,7 @@
     },
     {
       "dashboardFilter": "",
+      "datasource": "${DS_INFLUXDB}",
       "folderId": null,
       "gridPos": {
         "h": 7,
@@ -319,6 +196,7 @@
       "links": [],
       "nameFilter": "",
       "onlyAlertsOnDashboard": false,
+      "options": {},
       "show": "current",
       "sortOrder": 1,
       "stateFilter": [],
@@ -330,13 +208,16 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_INFLUXDB}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 24,
         "x": 0,
         "y": 7
       },
+      "hiddenSeries": false,
       "id": 2,
       "legend": {
         "avg": true,
@@ -352,6 +233,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -537,13 +421,16 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_INFLUXDB}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 24,
         "x": 0,
         "y": 14
       },
+      "hiddenSeries": false,
       "id": 27,
       "legend": {
         "avg": true,
@@ -559,6 +446,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -701,15 +591,15 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 16,
+  "schemaVersion": 22,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-7d",
-    "to": "now"
+    "from": "now/d",
+    "to": "now/d"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -739,5 +629,5 @@
   "timezone": "",
   "title": "Solar monitor Graphs",
   "uid": "NqLvdIiRk",
-  "version": 15
+  "version": 3
 }

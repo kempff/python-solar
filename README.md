@@ -95,6 +95,7 @@ To connect thereafter:
 * Add the vendor and product
     * _sudo nano /etc/udev/rules.d/99-solar.rules_
     * SUBSYSTEM=="usb", ATTR{idVendor}=="0665", ATTR{idProduct}=="5161", MODE="666"
+* _sudo udevadm control --reload_
 * _sudo udevadm trigger_
 
 ### Redis
