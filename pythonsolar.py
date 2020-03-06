@@ -214,6 +214,7 @@ def populate_status_data(status_data, mode_data, client):
             "charging_on": 0,
             "scc_charging_on": 0,
             "ac_charging_on": 0,
+            "pv_input_w": 203,
             }
     }
     ]
@@ -243,6 +244,7 @@ def populate_status_data(status_data, mode_data, client):
     status_body[0]['fields']['charging_on'] = int(the_bits[5])
     status_body[0]['fields']['scc_charging_on'] = int(the_bits[6])
     status_body[0]['fields']['ac_charging_on'] = int(the_bits[7])
+    status_body[0]['fields']['pv_input_w'] = float(status_data[12]) * float(status_data[13])
     client.write_points(status_body)
 
 
