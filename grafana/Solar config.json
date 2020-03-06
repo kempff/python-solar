@@ -1479,7 +1479,7 @@
       "valueName": "current"
     }
   ],
-  "refresh": "10s",
+  "refresh": "5m",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -1487,8 +1487,8 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "now/d",
+    "to": "now/d"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -1518,5 +1518,5 @@
   "timezone": "",
   "title": "Solar config",
   "uid": "Az1Amwzgd",
-  "version": 2
+  "version": 3
 }
