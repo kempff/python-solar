@@ -215,4 +215,25 @@ If default nginx screen is displayed:
 * _sudo service nginx restart_
 
 
+## Just running pythonsolar from a service file
+
+* _sudo nano /etc/systemd/system/solar.service_
+```
+[Unit]
+Description=pythonsolar daemon
+After=network.target
+
+[Service]
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/python-solar
+EnvironmentFile=/home/pi/python-solar/.env
+ExecStart=/home/pi/.local/bin/pipenv run python /home/pi/python-solar/pythonsolar.py
+
+[Install]
+WantedBy=multi-user.target
+
+```
+* _sudo systemctl start solar_
+* _sudo systemctl start enable_
 
