@@ -226,6 +226,8 @@ After=network.target
 [Service]
 User=pi
 Group=pi
+Restart=on-failure
+RestartSec=10
 WorkingDirectory=/home/pi/python-solar
 EnvironmentFile=/home/pi/python-solar/.env
 ExecStart=/home/pi/.local/bin/pipenv run python /home/pi/python-solar/pythonsolar.py

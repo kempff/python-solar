@@ -24,6 +24,7 @@ debug_data = config.DEBUG_MODE
 write_to_db = True
 request_ratings = True              # Flag to request ratings data, only when a command was sent and at startup
 processing = False
+errors = 0
 
 if debug_data:
     # Open the files for reading
@@ -155,6 +156,7 @@ def process_result(command, result_data):
 # Read data function (either from USB or file)
 def read_data():
     global request_ratings
+    global errors
     if debug_data:
         get_command('(B')
         the_data = read_file_data(mod_file)
@@ -167,22 +169,30 @@ def read_data():
         logger.info("Ratings data: {0}".format(the_data))
         process_result('QPIRI', the_data)
     else:
-        send_command(get_command('QMOD'))
-        result = get_result()
-        logger.debug(result)
-        process_result('QMOD', result)
-        time.sleep(1)
-        send_command(get_command('QPIGS'))
-        result = get_result()
-        logger.debug(result)
-        process_result('QPIGS', result)
-        time.sleep(1)
-        if request_ratings:
-            send_command(get_command('QPIRI'))
+        try:
+            send_command(get_command('QMOD'))
             result = get_result()
             logger.debug(result)
-            process_result('QPIRI', result)
-            request_ratings = False
+            process_result('QMOD', result)
+            time.sleep(1)
+            send_command(get_command('QPIGS'))
+            result = get_result()
+            logger.debug(result)
+            process_result('QPIGS', result)
+            time.sleep(1)
+            if request_ratings:
+                send_command(get_command('QPIRI'))
+                result = get_result()
+                logger.debug(result)
+                process_result('QPIRI', result)
+                request_ratings = False
+            errors = 0
+        except Exception as e:
+            logger.error(f"Send command error {e}")
+            errors+=1
+            # Too many errors - exit app. 'systemctl' will reload
+            if errors > 10:
+                exit(1)
 
 
 def populate_status_data(status_data, mode_data, client):
@@ -450,10 +460,13 @@ def process_function():
     global processing
     logger.info('Processing thread entry')
     while processing:
-        logger.info('Processing data...')
-        read_data()
-        populate_data()
-        time.sleep(config.PROCESS_TIME)
+        try:
+            logger.info('Processing data...')
+            read_data()
+            populate_data()
+            time.sleep(config.PROCESS_TIME)
+        except Exception as e:
+            logger.error(f"Error in process loop: {e}")
     logger.info('Processing thread exit')
 
 
