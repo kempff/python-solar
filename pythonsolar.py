@@ -172,12 +172,12 @@ def read_data():
         try:
             send_command(get_command('QMOD'))
             result = get_result()
-            logger.debug(result)
+            logger.debug(f"QMOD: {result}")
             process_result('QMOD', result)
             time.sleep(1)
             send_command(get_command('QPIGS'))
             result = get_result()
-            logger.debug(result)
+            logger.debug(f"QPIGS: {result}")
             process_result('QPIGS', result)
             time.sleep(1)
             if request_ratings:
