@@ -14,7 +14,7 @@ from openpyxl import Workbook
 import sys
 import usb.core
 
-APP_VERSION = "0.0.3"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.0.4"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Configure DB
@@ -139,7 +139,7 @@ def process_result(command, result_data):
     if result_data:
         if result_data[0] is '(':
             check_data = result_data[:-3].encode('utf-8')
-            rx_crc = result_data[-3:-1].encode('utf-8')
+            rx_crc = bytes([ord(result_data[-3:-2]),ord(result_data[-2:-1])])
             crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
             logger.debug('Check data len {0}'.format(len(check_data)))
             if crc == rx_crc or debug_data:
