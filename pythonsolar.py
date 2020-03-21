@@ -50,9 +50,12 @@ logger = logging.getLogger('python_solar')
 log_level_config = config.LOG_LEVEL
 log_level = logging.WARNING
 if log_level_config == 'INFO':
+    print('Info logginf')
     log_level = logging.INFO
 elif log_level_config == 'DEBUG':
+    print('Debug logging')
     log_level = logging.DEBUG
+print(f'\nLog level {log_level_config} \n')
 file_handler.setLevel(log_level)
 formatter = logging.Formatter(
     '\n\n** %(asctime)s %(levelname)s: %(message)s '
@@ -165,7 +168,7 @@ def read_data():
         process_result('QPIRI', the_data)
     else:
         send_command(get_command('QMOD'))
-        result = get_result()  
+        result = get_result()
         logger.debug(result)
         process_result('QMOD', result)
         time.sleep(1)
@@ -175,10 +178,10 @@ def read_data():
         process_result('QPIGS', result)
         time.sleep(1)
         if request_ratings:
-            send_command(get_command('QPIGS'))
+            send_command(get_command('QPIRI'))
             result = get_result()
             logger.debug(result)
-            process_result('QPIGS', result)
+            process_result('QPIRI', result)
             request_ratings = False
 
 
@@ -476,18 +479,19 @@ def set_log_level(input_data):
 
 logger.setLevel(logging.INFO)
 logger.info('Running {0} with host {1} and port {2}'.format(APP_NAME, config.FLASK_HTTP_HOST, config.FLASK_HTTP_PORT))
+logger.info(f"Influx DB config: {config.INFLUX_HOST}, {config.INFLUX_PORT}, {config.INFLUX_DB}")
 logger.setLevel(config.LOG_LEVEL)
 
 
-def start_processing():
-    global processing
-    if not processing:
-        logger.info('Creating thread...')
-        # Run reading of data and writing to DB as a background thread
-        process_thread = Thread(target=process_function)
-        processing = True
-        process_thread.start()
-        process_thread.join()
-        processing = False
+#def start_processing():
+#    global processing
+#    if not processing:
+logger.info('Creating thread...')
+# Run reading of data and writing to DB as a background thread
+process_thread = Thread(target=process_function)
+processing = True
+process_thread.start()
+process_thread.join()
+processing = False
 
 

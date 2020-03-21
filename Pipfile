@@ -19,4 +19,4 @@ redis = "==3.4.1"
 influxdb = "==5.2.3"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
