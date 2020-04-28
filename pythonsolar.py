@@ -14,7 +14,7 @@ from openpyxl import Workbook
 import sys
 import usb.core
 
-APP_VERSION = "0.0.4"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.0.5"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Configure DB
@@ -90,6 +90,7 @@ def get_command(cmd):
     cmd = cmd+b'\r'
     while len(cmd)<8:
         cmd = cmd+b'\0'
+    logger.info(f'CMD: {cmd}')
     return cmd
 
 
@@ -316,7 +317,7 @@ def populate_ratings_data(ratings_data, client):
     ratings_body[0]['fields']['battery_bulk_voltage'] = float(ratings_data[10])
     ratings_body[0]['fields']['battery_float_voltage'] = float(ratings_data[11])
     ratings_body[0]['fields']['battery_type'] = battery_type_dictionary[ratings_data[12]]
-    ratings_body[0]['fields']['max_ac_charge_current'] = float(status_data[13])
+    ratings_body[0]['fields']['max_ac_charge_current'] = float(ratings_data[13])
     ratings_body[0]['fields']['max_charge_current'] = float(ratings_data[14])
     ratings_body[0]['fields']['input_voltage_range'] = input_voltage_dictionary[ratings_data[15]]
     ratings_body[0]['fields']['output_source_priority'] = output_source_dictionary[ratings_data[16]]
@@ -459,6 +460,10 @@ def perform_aggregations(start_date, end_date):
 def process_function():
     global processing
     logger.info('Processing thread entry')
+#    logger.info('Setting re-discharge')
+#    re_command =  "PBDV56.0"
+#    send_command_with_ack_reply(re_command)
+#    time.sleep(3)
     while processing:
         try:
             logger.info('Processing data...')
