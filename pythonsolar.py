@@ -95,7 +95,6 @@ def send_command(cmd):
     global usb_dev
     bytes_to_send = len(cmd)
     byte_offset = 0
-    logger.info(f"{bytes_to_send} - {cmd}")
     while bytes_to_send:
         # Limit packet size to 8 bytes
         if bytes_to_send > 8:
@@ -104,7 +103,6 @@ def send_command(cmd):
         else:
             tx_data = cmd[byte_offset:byte_offset+bytes_to_send]
             the_bytes = bytes_to_send
-        logger.info(f"{tx_data}")
         # Pad up to 8 bytes with zeros
         while len(tx_data)<8:
             tx_data = tx_data+b'\0'
@@ -129,9 +127,6 @@ def get_result(timeout=100):
         i+=1
     return res
 
-send_command(format_data("PBCV49.0"))
-result = get_result()
-logger.info(f"Result: {result}")
 
 def write_mode_data(the_data):
     global mode_data
@@ -372,11 +367,11 @@ def send_command_with_ack_reply(command):
     global request_ratings
     send_command(format_data(command))
     result = get_result()
-    if result is '(ACK':
-        logger.info('Command {0} processed OK').format(command)
+    if result[0:4] == '(ACK':
+        logger.info(f'Command {command} processed OK')
         request_ratings = True
     else:
-        logger.error('Command {0} error, reply {1}'.format(command,result))
+        logger.error(f'Command {command} error, reply {result}')
 
 
 def convert_timestamp_to_datetime(in_time):
@@ -477,10 +472,10 @@ def perform_aggregations(start_date, end_date):
 def process_function():
     global processing
     logger.info('Processing thread entry')
-#    logger.info('Setting re-discharge')
-#    re_command =  "PBDV56.0"
+#    time.sleep(1)
+#    re_command =  "PBCV49.0"
 #    send_command_with_ack_reply(re_command)
-#    time.sleep(3)
+
     while processing:
         try:
             logger.info('Processing data...')
