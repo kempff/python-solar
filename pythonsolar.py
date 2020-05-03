@@ -83,19 +83,35 @@ def read_file_data(input_file):
     return return_data
 
 
-def get_command(cmd):
+def format_data(cmd):
     cmd = cmd.encode('utf-8')
     crc = crc16.crc16xmodem(cmd).to_bytes(2,'big')
     cmd = cmd+crc
     cmd = cmd+b'\r'
-    while len(cmd)<8:
-        cmd = cmd+b'\0'
     return cmd
 
 
 def send_command(cmd):
     global usb_dev
-    usb_dev.ctrl_transfer(0x21, 0x9, 0x200, 0, cmd)
+    bytes_to_send = len(cmd)
+    byte_offset = 0
+    logger.info(f"{bytes_to_send} - {cmd}")
+    while bytes_to_send:
+        # Limit packet size to 8 bytes
+        if bytes_to_send > 8:
+            tx_data = cmd[byte_offset:byte_offset+8]
+            the_bytes = 8
+        else:
+            tx_data = cmd[byte_offset:byte_offset+bytes_to_send]
+            the_bytes = bytes_to_send
+        logger.info(f"{tx_data}")
+        # Pad up to 8 bytes with zeros
+        while len(tx_data)<8:
+            tx_data = tx_data+b'\0'
+        usb_dev.ctrl_transfer(0x21, 0x9, 0x200, 0, tx_data)
+        # Recalculate the offsets
+        byte_offset += the_bytes
+        bytes_to_send -= the_bytes
 
 
 def get_result(timeout=100):
@@ -113,6 +129,9 @@ def get_result(timeout=100):
         i+=1
     return res
 
+send_command(format_data("PBCV49.0"))
+result = get_result()
+logger.info(f"Result: {result}")
 
 def write_mode_data(the_data):
     global mode_data
@@ -158,7 +177,6 @@ def read_data():
     global request_ratings
     global errors
     if debug_data:
-        get_command('(B')
         the_data = read_file_data(mod_file)
         logger.info("Mode data: {0}".format(the_data))
         process_result('QMOD', the_data)
@@ -170,18 +188,18 @@ def read_data():
         process_result('QPIRI', the_data)
     else:
         try:
-            send_command(get_command('QMOD'))
+            send_command(format_data('QMOD'))
             result = get_result()
             logger.debug(f"QMOD: {result}")
             process_result('QMOD', result)
             time.sleep(1)
-            send_command(get_command('QPIGS'))
+            send_command(format_data('QPIGS'))
             result = get_result()
             logger.debug(f"QPIGS: {result}")
             process_result('QPIGS', result)
             time.sleep(1)
             if request_ratings:
-                send_command(get_command('QPIRI'))
+                send_command(format_data('QPIRI'))
                 result = get_result()
                 logger.debug(result)
                 process_result('QPIRI', result)
@@ -352,7 +370,7 @@ def populate_data():
 
 def send_command_with_ack_reply(command):
     global request_ratings
-    send_command(get_command(command))
+    send_command(format_data(command))
     result = get_result()
     if result is '(ACK':
         logger.info('Command {0} processed OK').format(command)
