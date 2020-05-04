@@ -19,7 +19,29 @@ Note: when python modules gave installation errors upon _pipenv install_ run _pi
 * git flow init
 * git checkout develop (or other feature branch)
 * pipenv install
-* If crc16 and psycopg fails: pipenv shell, pip install crc16, pip install psycopg2-binary, exit, pipenv install
+* If crc16 and psycopg fails: pipenv shell, pip install crc16==0.1.1, pip install psycopg2-binary==2.8.4, exit, pipenv install
+
+### Python 3.7
+
+SSL:
+* sudo apt-get install build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+* cd /usr/src
+* sudo curl https://www.openssl.org/source/openssl-1.0.2o.tar.gz | sudo tar xz 
+* cd openssl-1.0.2o
+* sudo ./config shared --prefix=/usr/local/
+* sudo make
+* sudo make install
+* sudo mkdir lib
+* sudo cp ./*.{so,so.1.0.0,a,pc} ./lib
+
+Python:
+* cd ~/Downloads
+* sudo wget https://www.python.org/ftp/python/3.7.7/Python-3.7.7.tgz
+* sudo tar xzf Python-3.7.7.tgz
+* cd Python-3.7.7
+* ./configure --with-openssl=~/Downloads/openssl-1.0.2o --enable-optimizations
+* sudo make
+* sudo make altinstall
 
 ### Postgres
 

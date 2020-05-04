@@ -513,15 +513,15 @@ logger.info(f"Influx DB config: {config.INFLUX_HOST}, {config.INFLUX_PORT}, {con
 logger.setLevel(config.LOG_LEVEL)
 
 
-#def start_processing():
-#    global processing
-#    if not processing:
-logger.info('Creating thread...')
-# Run reading of data and writing to DB as a background thread
-process_thread = Thread(target=process_function)
-processing = True
-process_thread.start()
-process_thread.join()
-processing = False
+def start_processing():
+    global processing
+    if not processing:
+        logger.info('Creating thread...')
+        # Run reading of data and writing to DB as a background thread
+        process_thread = Thread(target=process_function)
+        processing = True
+        process_thread.start()
+        process_thread.join()
+        processing = False
 
 
