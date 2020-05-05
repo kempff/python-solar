@@ -1,4 +1,4 @@
-/log
+/logs/*
 *.xlsx
 *.pyc
 .env

@@ -261,3 +261,8 @@ WantedBy=multi-user.target
 * _sudo systemctl start solar_
 * _sudo systemctl start enable_
 
+## Access from Virtualbox
+
+* Power down Virtualbox
+* Go to "Global Tools" and click on "Create"
+* Go to the "Network" settings of the Virtualbox, select "Host network" and the created network. 
