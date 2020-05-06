@@ -103,6 +103,10 @@ To connect thereafter:
     * sudo geany /etc/grafana/grafana.ini
     * add allow_embedding=true under [security]
     * sudo service grafana-server restart
+* To enable using subpath from nginx
+    * sudo geany /etc/grafana/grafana.ini
+    * root_url = http://localhost:3000/grafana/
+    * serve_from_sub_path = true
 * Browser to localhost:3000, username and password admin/admin
     * Enter a new admin password when prompted
     * Add the InfluxDB datasource
@@ -209,6 +213,10 @@ WantedBy=multi-user.target
 * _sudo nano /etc/nginx/sites-available/python-solar_
 
 ```
+upstream grafana {
+        server localhost:3000;
+    }
+
 server {
     listen 80;
     access_log /home/pi/python_solar/logs/nginx-access.log;
@@ -222,6 +230,10 @@ server {
     location / {
         include proxy_params;
         proxy_pass http://unix:/home/pi/python-solar/python-solar.sock;
+    }
+
+    location /grafana/ {
+        proxy_pass http://grafana/;
     }
 }
 ```
