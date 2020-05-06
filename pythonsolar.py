@@ -44,6 +44,7 @@ else:
 mode_data = []          # From QMOD command
 status_data = []        # From QPIGS command
 ratings_data = []       # From QPIRI command
+error_data = []         # From QPIWS command
 # Setup logging, using the configuration to set the path and the level
 log_file_path = config.LOG_FILE_PATH
 file_handler = RotatingFileHandler(log_file_path + 'python_solar.log', maxBytes=2 * 1024 * 1024, backupCount=10)
@@ -141,13 +142,19 @@ def write_status_data(the_data):
 def write_ratings_data(the_data):
     global ratings_data
     ratings_data = the_data
+
+
+def write_error_data(the_data):
+    global error_data
+    error_data = the_data
     
 
 def process_result(command, result_data):
     global debug_data
     result_dictionary = {'QMOD' : write_mode_data,
                          'QPIRI': write_ratings_data,
-                         'QPIGS': write_status_data}
+                         'QPIGS': write_status_data,
+                         'QPIWS': write_error_data}
     hex_data = ":".join("{:02x}".format(ord(c)) for c in result_data)
     logger.debug("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
     if result_data:
@@ -171,6 +178,7 @@ def process_result(command, result_data):
 def read_data():
     global request_ratings
     global errors
+    cyclic_commands = [ 'QMOD', 'QPIGS', 'QPIWS']
     if debug_data:
         the_data = read_file_data(mod_file)
         logger.info("Mode data: {0}".format(the_data))
@@ -181,18 +189,18 @@ def read_data():
         the_data = read_file_data(piri_file)
         logger.info("Ratings data: {0}".format(the_data))
         process_result('QPIRI', the_data)
+        the_data = read_file_data(piws_file)
+        logger.info("Fault data: {0}".format(the_data))
+        process_result('QPIWS', the_data)
     else:
         try:
-            send_command(format_data('QMOD'))
-            result = get_result()
-            logger.debug(f"QMOD: {result}")
-            process_result('QMOD', result)
-            time.sleep(1)
-            send_command(format_data('QPIGS'))
-            result = get_result()
-            logger.debug(f"QPIGS: {result}")
-            process_result('QPIGS', result)
-            time.sleep(1)
+            for the_cmd in cyclic_commands:    
+                send_command(format_data(the_cmd))
+                result = get_result()
+                logger.debug(f"{the_cmd}: {result}")
+                process_result(the_cmd, result)
+                time.sleep(1)
+            # If the frontend configured something, request the ratings
             if request_ratings:
                 send_command(format_data('QPIRI'))
                 result = get_result()
@@ -343,22 +351,166 @@ def populate_ratings_data(ratings_data, client):
     ratings_body[0]['fields']['pv_power_balance'] = float(ratings_data[24])
     client.write_points(ratings_body)
 
+def populate_error_data(error_data, client):
+    write_errors = False
+    message_list = {
+        1: {
+            'message': 'Reserved',
+            'severity': 'error',
+        },
+        2: {
+            'message': 'Inverter fault',
+            'severity': 'error',
+        },
+        3: {
+            'message': 'Bus Over',
+            'severity': 'error',
+        },
+        4: {
+            'message': 'Bus Under',
+            'severity': 'error',
+        },
+        5: {
+            'message': 'Bus Soft Fail',
+            'severity': 'error',
+        },
+        6: {
+            'message': 'Line Fail',
+            'severity': 'warning',
+        },
+        7: {
+            'message': 'OPV Short',
+            'severity': 'warning',
+        },
+        8: {
+            'message': 'Inverter voltage too low',
+            'severity': 'error',
+        },
+        9: {
+            'message': 'Inverter voltage too high',
+            'severity': 'error',
+        },
+        10: {
+            'message': 'Over temperature',
+            'severity': 'error',
+        },
+        11: {
+            'message': 'Fan locked',
+            'severity': 'error',
+        },
+        12: {
+            'message': 'Battery voltage high',
+            'severity': 'error',
+        },
+        13: {
+            'message': 'Battery low alarm',
+            'severity': 'warning',
+        },
+        14: {
+            'message': 'Reserved',
+            'severity': 'error',
+        },
+        15: {
+            'message': 'Battery under shutdown',
+            'severity': 'warning',
+        },
+        16: {
+            'message': 'Battery derating',
+            'severity': 'warning',
+        },
+        17: {
+            'message': 'Overload',
+            'severity': 'error',
+        },
+        18: {
+            'message': 'Eeprom fault',
+            'severity': 'warning',
+        },
+        19: {
+            'message': 'Inverter Over Current',
+            'severity': 'error',
+        },
+        20: {
+            'message': 'Inverter Soft Fail',
+            'severity': 'error',
+        },
+        21: {
+            'message': 'Self Test Fail',
+            'severity': 'error',
+        },
+        22: {
+            'message': 'OP DC Voltage Over',
+            'severity': 'error',
+        },
+        23: {
+            'message': 'Bat Open',
+            'severity': 'error',
+        },
+        24: {
+            'message': 'Current Sensor Fail',
+            'severity': 'error',
+        },
+        25: {
+            'message': 'Battery Short',
+            'severity': 'error',
+        },
+        26: {
+            'message': 'Power limit',
+            'severity': 'warning',
+        },
+        27: {
+            'message': 'PV voltage high 1',
+            'severity': 'warning',
+        },
+        28: {
+            'message': 'MPPT overload fault 1',
+            'severity': 'warning',
+        },
+        29: {
+            'message': 'MPPT overload warning 1',
+            'severity': 'warning',
+        },
+        30: {
+            'message': 'Battery too low to charge 1',
+            'severity': 'warning',
+        },
+        31: {
+            'message': 'PV voltage high 2',
+            'severity': 'warning',
+        },
+        32: {
+            'message': 'MPPT overload fault 2',
+            'severity': 'warning',
+        },
+    }
+    for value in error_data:
+        if value != 0:
+            write_errors = True
+    
+    #if write_errors:
+
+
 
 def populate_data():
     global mode_data
     global status_data
+    global ratings_data
+    global error_data
     global influx_client
     try:
         if write_to_db:
             logger.info("Writing to database...")
             if len(mode_data) > 0:
-                logger.debug('Mode data: {0}'.format(mode_data))
+                logger.debug(f"Mode data: {mode_data}")
             if len(status_data) > 0:
-                logger.debug('Status data: {0}'.format(status_data))
+                logger.debug(f"Status data: {status_data}")
                 populate_status_data(status_data, mode_data, influx_client)
             if len(ratings_data) > 0:
-                logger.debug('Ratings data: {0}'.format(ratings_data))
+                logger.debug(f"Ratings data: {ratings_data}")
                 populate_ratings_data(ratings_data, influx_client)
+            if len(error_data) > 0:
+                logger.debug(f"Error data: {error_data}")
+                populate_error_data(error_data)
     except Exception as e:
         logger.error(str(e))
 
