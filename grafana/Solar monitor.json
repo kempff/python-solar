@@ -39,6 +39,12 @@
       "id": "singlestat",
       "name": "Singlestat",
       "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
     }
   ],
   "annotations": {
@@ -1029,7 +1035,7 @@
       "folderId": null,
       "gridPos": {
         "h": 6,
-        "w": 7,
+        "w": 8,
         "x": 8,
         "y": 6
       },
@@ -1422,6 +1428,108 @@
       "valueName": "avg"
     },
     {
+      "columns": [],
+      "datasource": "${DS_INFLUXDB}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 12
+      },
+      "id": 35,
+      "options": {},
+      "pageSize": null,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": "row",
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "#FF9830",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "link": false,
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "groupBy": [],
+          "measurement": "system_error",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "severity"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "message"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "installation",
+              "operator": "=",
+              "value": "test_installation1"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Inverter Errors",
+      "transform": "table",
+      "type": "table"
+    },
+    {
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": true,
@@ -1674,7 +1782,7 @@
       "valueName": "avg"
     }
   ],
-  "refresh": "5m",
+  "refresh": "10s",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -1682,8 +1790,8 @@
     "list": []
   },
   "time": {
-    "from": "now/d",
-    "to": "now/d"
+    "from": "now-5m",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -1713,5 +1821,5 @@
   "timezone": "",
   "title": "Solar monitor",
   "uid": "TgHAmwzgk",
-  "version": 15
+  "version": 1
 }

@@ -14,7 +14,7 @@ from openpyxl import Workbook
 import sys
 import usb.core
 
-APP_VERSION = "0.0.5"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.0.6"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Configure DB
@@ -31,6 +31,7 @@ if debug_data:
     pigs_file = open("qpigs.txt","r")
     mod_file = open("qmod.txt","r")
     piri_file = open("qpiri.txt","r")
+    piws_file = open("qpiws.txt","r")
 else:
     # Configure USB to Solar device
     vendorId = 0x0665
@@ -52,7 +53,7 @@ logger = logging.getLogger('python_solar')
 log_level_config = config.LOG_LEVEL
 log_level = logging.WARNING
 if log_level_config == 'INFO':
-    print('Info logginf')
+    print('Info logging')
     log_level = logging.INFO
 elif log_level_config == 'DEBUG':
     print('Debug logging')
@@ -352,144 +353,26 @@ def populate_ratings_data(ratings_data, client):
     client.write_points(ratings_body)
 
 def populate_error_data(error_data, client):
-    write_errors = False
-    message_list = {
-        1: {
-            'message': 'Reserved',
-            'severity': 'error',
-        },
-        2: {
-            'message': 'Inverter fault',
-            'severity': 'error',
-        },
-        3: {
-            'message': 'Bus Over',
-            'severity': 'error',
-        },
-        4: {
-            'message': 'Bus Under',
-            'severity': 'error',
-        },
-        5: {
-            'message': 'Bus Soft Fail',
-            'severity': 'error',
-        },
-        6: {
-            'message': 'Line Fail',
-            'severity': 'warning',
-        },
-        7: {
-            'message': 'OPV Short',
-            'severity': 'warning',
-        },
-        8: {
-            'message': 'Inverter voltage too low',
-            'severity': 'error',
-        },
-        9: {
-            'message': 'Inverter voltage too high',
-            'severity': 'error',
-        },
-        10: {
-            'message': 'Over temperature',
-            'severity': 'error',
-        },
-        11: {
-            'message': 'Fan locked',
-            'severity': 'error',
-        },
-        12: {
-            'message': 'Battery voltage high',
-            'severity': 'error',
-        },
-        13: {
-            'message': 'Battery low alarm',
-            'severity': 'warning',
-        },
-        14: {
-            'message': 'Reserved',
-            'severity': 'error',
-        },
-        15: {
-            'message': 'Battery under shutdown',
-            'severity': 'warning',
-        },
-        16: {
-            'message': 'Battery derating',
-            'severity': 'warning',
-        },
-        17: {
-            'message': 'Overload',
-            'severity': 'error',
-        },
-        18: {
-            'message': 'Eeprom fault',
-            'severity': 'warning',
-        },
-        19: {
-            'message': 'Inverter Over Current',
-            'severity': 'error',
-        },
-        20: {
-            'message': 'Inverter Soft Fail',
-            'severity': 'error',
-        },
-        21: {
-            'message': 'Self Test Fail',
-            'severity': 'error',
-        },
-        22: {
-            'message': 'OP DC Voltage Over',
-            'severity': 'error',
-        },
-        23: {
-            'message': 'Bat Open',
-            'severity': 'error',
-        },
-        24: {
-            'message': 'Current Sensor Fail',
-            'severity': 'error',
-        },
-        25: {
-            'message': 'Battery Short',
-            'severity': 'error',
-        },
-        26: {
-            'message': 'Power limit',
-            'severity': 'warning',
-        },
-        27: {
-            'message': 'PV voltage high 1',
-            'severity': 'warning',
-        },
-        28: {
-            'message': 'MPPT overload fault 1',
-            'severity': 'warning',
-        },
-        29: {
-            'message': 'MPPT overload warning 1',
-            'severity': 'warning',
-        },
-        30: {
-            'message': 'Battery too low to charge 1',
-            'severity': 'warning',
-        },
-        31: {
-            'message': 'PV voltage high 2',
-            'severity': 'warning',
-        },
-        32: {
-            'message': 'MPPT overload fault 2',
-            'severity': 'warning',
-        },
-    }
-    for value in error_data:
+    error_values = [int(d) for d in error_data[0]]
+
+    for cnt,value in enumerate(error_values,start=1):
         if value != 0:
-            write_errors = True
-    
-    #if write_errors:
-
-
+            logger.error(f"Error {config.ERROR_MESSAGES[cnt]['message']} ({config.ERROR_MESSAGES[cnt]['severity']}) active!")
+            error_body = [
+                            {
+                                "measurement": "system_error",
+                                "tags": {
+                                    "installation": config.INSTALLATION,
+                                    "appname": APP_NAME,
+                                    "host": "raspberry",
+                                    },
+                                "fields": {
+                                    "message": config.ERROR_MESSAGES[cnt]['message'], 
+                                    "severity": config.ERROR_MESSAGES[cnt]['severity'],
+                                }
+                            }
+            ]     
+            client.write_points(error_body)
 
 def populate_data():
     global mode_data
@@ -510,7 +393,7 @@ def populate_data():
                 populate_ratings_data(ratings_data, influx_client)
             if len(error_data) > 0:
                 logger.debug(f"Error data: {error_data}")
-                populate_error_data(error_data)
+                populate_error_data(error_data, influx_client)
     except Exception as e:
         logger.error(str(e))
 
@@ -677,3 +560,5 @@ def start_processing():
         processing = False
 
 
+if __name__ == '__main__':
+    start_processing()
