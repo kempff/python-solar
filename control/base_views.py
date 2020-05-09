@@ -33,9 +33,15 @@ class HomePageView(View):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         else:
-            pv_charge_current = self.request.GET.get('pv_charge_current')
-            ac_charge_current = self.request.GET.get('ac_charge_current')
-            battery_recharge_v = self.request.GET.get('battery_recharge_v')
-            battery_re_discharge_v = self.request.GET.get('battery_re_discharge_v')
+            return render(request, "home.html")
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+        else:
+            pv_charge_current = self.request.POST.get('pv_charge_current')
+            ac_charge_current = self.request.POST.get('ac_charge_current')
+            battery_recharge_v = self.request.POST.get('battery_recharge_v')
+            battery_re_discharge_v = self.request.POST.get('battery_re_discharge_v')
             return render(request, "home.html")
 

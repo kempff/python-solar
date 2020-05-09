@@ -3,6 +3,9 @@
 {% block content %}
 <h1>Solar inverter configuration</h1>
 
-
+<form method="post">{% csrf_token %}
+    <h3>Set PV charge current</h3><input class="btn btn-primary" type="submit" name="pv_charge_current" value="Submit" />
+    <h3>Set AC charge current</h3><input class="btn btn-primary" type="submit" name="ac_charge_current" value="Submit" />
+</form>
 
 {% endblock content %}
