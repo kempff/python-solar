@@ -14,6 +14,8 @@ from django.http import JsonResponse
 # Load internal modules
 from solar.struct_logger import StructLogger
 from solar.settings import APP_NAME, APP_VERSION
+from tasks import send_command
+from constants import SET_MAX_CURRENT
 
 the_logger = StructLogger()
 the_logger.info(f'Running {APP_NAME} version {APP_VERSION}')
@@ -39,10 +41,12 @@ class HomePageView(View):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         else:
-            if self.request.POST.get('pv_charge_current_btn'):
-                the_logger.info(f"PV charge: {self.request.POST.get('pv_charge_current_val')}")
+            if self.request.POST.get('max_charge_current_btn'):
+                current = self.request.POST.get('max_charge_current_val')
+                the_logger.info(f"Max charge current: {current}")
+                send_command(SET_MAX_CURRENT,current).delay()
             if self.request.POST.get('ac_charge_current_btn'):
-                the_logger.info(f"AC charge: {self.request.POST.get('ac_charge_current_val')}")
+                the_logger.info(f"AC charge current: {self.request.POST.get('ac_charge_current_val')}")
             battery_recharge_v = self.request.POST.get('battery_recharge_v')
             battery_re_discharge_v = self.request.POST.get('battery_re_discharge_v')
             return render(request, "home.html")

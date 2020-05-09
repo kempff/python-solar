@@ -4,7 +4,6 @@ from influxdb import InfluxDBClient
 from threading import Thread
 import logging
 import time
-import solar_config as config
 import sys
 from logging.handlers import RotatingFileHandler
 import crc16
@@ -13,6 +12,10 @@ import pytz
 from openpyxl import Workbook
 import sys
 import usb.core
+
+# Internal imports
+from constants import command_dictionary
+import solar_config as config
 
 APP_VERSION = "0.0.6"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
@@ -558,6 +561,11 @@ def start_processing():
         process_thread.start()
         process_thread.join()
         processing = False
+
+
+def send_command_to_inverter(command,value):
+    the_command = f"{command_dictionary[command]}{value}"
+    send_command_with_ack_reply(the_command)
 
 
 if __name__ == '__main__':
