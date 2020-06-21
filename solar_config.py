@@ -9,14 +9,6 @@ PROCESS_TIME = int(os.getenv('PROCESS_TIME', 60))
 INSTALLATION = os.getenv('INSTALLATION', "test_installation1")
 TIME_OFFSET = int(os.getenv('TIME_OFFSET', 2))
 
-# Flask configuration
-FLASK_HTTP_PORT = os.getenv('FLASK_HTTP_PORT', 8080)
-FLASK_HTTP_HOST = os.getenv('FLASK_HTTP_HOST', '0.0.0.0')
-
-# API authentication
-BASIC_AUTH_USERNAME = os.getenv('BASIC_AUTH_USERNAME', '')
-BASIC_AUTH_PASSWORD = os.getenv('BASIC_AUTH_PASSWORD', '')
-
 if os.getenv('DEBUG_MODE', False) == 'True':
     DEBUG_MODE = True
 else:

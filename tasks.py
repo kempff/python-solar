@@ -2,9 +2,10 @@ from celery import Celery
 from celery import task  
 
 # Internal imports
-from pythonsolar import start_processing, send_command_to_inverter
+from pythonsolar import PythonSolar
 from solar.struct_logger import StructLogger
 
+solar_processor = PythonSolar()
 the_logger = StructLogger()
 
 app = Celery('tasks', broker='redis://guest@localhost//')
@@ -18,7 +19,7 @@ def start_solar():
 
     '''
     the_logger.info(f'Starting solar processing...')
-    start_processing()
+    solar_processor.start_processing()
     return True
 
 @task
@@ -30,5 +31,4 @@ def send_command(command,data):
 
     '''
     the_logger.info(f'Sending command {command}')
-    send_command_to_inverter(command, data)
-    
+    solar_processor.send_command_to_inverter(command, data)

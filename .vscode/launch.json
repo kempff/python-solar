@@ -14,6 +14,12 @@
                 "--noreload"
             ],
             "django": true
+        },
+        {
+            "name": "Python: Processor",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/pythonsolar.py",
         }
     ]
 }
