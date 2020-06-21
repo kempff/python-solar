@@ -486,13 +486,16 @@ class PythonSolar:
 
 
     def start_processing(self):
-        logger.info('Creating thread...')
-        # Run reading of data and writing to DB as a background thread
-        process_thread = Thread(target=self.process_function)
-        self.processing = True
-        process_thread.start()
-        process_thread.join()
-        self.processing = False
+        if not self.processing:
+            logger.info('Creating thread...')
+            # Run reading of data and writing to DB as a background thread
+            process_thread = Thread(target=self.process_function)
+            self.processing = True
+            process_thread.start()
+            process_thread.join()
+            self.processing = False
+        else:
+            logger.info('Thread already started')
 
 
     def send_command_to_inverter(self, command,value):

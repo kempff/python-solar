@@ -166,7 +166,7 @@ To connect thereafter:
 
 * To execute (saving celery logs to _/tmp/solar.log_):
     * pipenv shell
-    * celery -A tasks worker --loglevel=info -f /tmp/solar.log
+    * celery -A tasks worker --concurrency=1 --loglevel=info -f /tmp/solar.log
     * In another terminal: 
         * pipenv shell 
         * python manage.py runserver
