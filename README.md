@@ -113,6 +113,9 @@ To connect thereafter:
     * Add 'viewer' user with password 'grafana123' under 'Server admin' -> 'Users' menu
     * Add the connection to the solardb Influx database
     * Select 'Import' in the 'Create' menu and upload the JSON files in the 'grafana' directory of the project
+* To set default dashboard:
+    * Logon as an admin and under Grafana Menu > Main Org > Preferences you can set the home dashboard for your organization.
+
 
 ### USB
 
@@ -172,9 +175,9 @@ To connect thereafter:
 ## Remote access
 
 Options:
-* Using _remote.it_ to add a VNC connection
+* Using _remote.it_ to add connections
     * run _sudo connectd_installer_
-    * Setup SSH, HTTP and VNC
+    * Setup SSH and HTTP
 * Expost the HTTP port with _remote.it_ and use Gunicorn and Nginx
 
 ### Gunicorn

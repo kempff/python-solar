@@ -1320,7 +1320,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "system_status",
+          "measurement": "system_rating",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1466,7 +1466,7 @@
         }
       ],
       "thresholds": "",
-      "title": "Battery under Voltage",
+      "title": "Battery under voltage",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -1518,5 +1518,5 @@
   "timezone": "",
   "title": "Solar config",
   "uid": "Az1Amwzgd",
-  "version": 3
+  "version": 4
 }
