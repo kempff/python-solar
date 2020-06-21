@@ -29,4 +29,6 @@ def send_command(command,data):
     send_command.delay()
 
     '''
+    the_logger.info(f'Sending command {command}')
     send_command_to_inverter(command, data)
+    

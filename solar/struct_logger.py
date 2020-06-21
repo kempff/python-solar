@@ -13,10 +13,10 @@ LOG_FILE_PATH = os.getenv('LOG_FILE_PATH', '/tmp/')
 class _StructLogger:
 
     '''
-    Logger class. Don't call this, use the 'SchLogger' which returns a singleton (one logging object).
+    Logger class. Don't call this, use the 'StructLogger' which returns a singleton (one logging object).
     The class has overloaded the logger functions to add the calling applications filename and line number.
     '''
-    def __init__(self):
+    def __init__(self, app_name=APP_NAME):
         self.logger = structlog.stdlib.BoundLogger
         # Setup the logging configuration
         chain = [
@@ -37,7 +37,7 @@ class _StructLogger:
             )
 
         logging.basicConfig(format='%(message)s', stream=sys.stdout, level=int(DEFAULT_LOGGING_LEVEL))
-        self.app_name = APP_NAME
+        self.app_name = app_name
         self.logger = structlog.get_logger(self.app_name)
 
         # Add logging to Rotating Log as well
@@ -48,6 +48,11 @@ class _StructLogger:
                                     '"functionName":"%(funcName)s", "lineNo":"%(lineno)d", "message":"%(message)s"}')
         file_handler.formatter = formatter
         self.logger.addHandler(file_handler)
+
+    def print_app_version(self,app_version=APP_VERSION):
+        self.logger.setLevel(logging.INFO)
+        self.logger.info(f'Running app \'{self.app_name}\' version {app_version}')
+        self.logger.setLevel(int(DEFAULT_LOGGING_LEVEL))
 
     def critical(self, log_text):
         caller = getframeinfo(stack()[1][0])
@@ -68,6 +73,9 @@ class _StructLogger:
     def debug(self, log_text):
         caller = getframeinfo(stack()[1][0])
         self.logger.debug(f'-< {os.path.basename(caller.filename)}:{caller.lineno} >- {log_text}')
+
+    def setLevel(self, level):
+        self.logger.setLevel(level)
 
 # Create a logging object 
 _struct_logger = _StructLogger()

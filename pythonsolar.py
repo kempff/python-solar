@@ -16,6 +16,7 @@ import usb.core
 # Internal imports
 from constants import command_dictionary
 import solar_config as config
+from solar.struct_logger import StructLogger
 
 APP_VERSION = "0.0.6"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
@@ -50,33 +51,9 @@ status_data = []        # From QPIGS command
 ratings_data = []       # From QPIRI command
 error_data = []         # From QPIWS command
 # Setup logging, using the configuration to set the path and the level
-log_file_path = config.LOG_FILE_PATH
-file_handler = RotatingFileHandler(log_file_path + 'python_solar.log', maxBytes=2 * 1024 * 1024, backupCount=10)
-logger = logging.getLogger('python_solar')
-log_level_config = config.LOG_LEVEL
-log_level = logging.WARNING
-if log_level_config == 'INFO':
-    print('Info logging')
-    log_level = logging.INFO
-elif log_level_config == 'DEBUG':
-    print('Debug logging')
-    log_level = logging.DEBUG
-print(f'\nLog level {log_level_config} \n')
-file_handler.setLevel(log_level)
-formatter = logging.Formatter(
-    '\n\n** %(asctime)s %(levelname)s: %(message)s '
-    '[in %(pathname)s:%(lineno)d]')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+logger = StructLogger()
+logger.print_app_version()
 
-# Configure screen logging according to config
-if config.PRINT_LOGS:
-    logger = logging.getLogger('python_solar')
-    logger.setLevel(logging.DEBUG)
-    console = logging.StreamHandler()
-    console.setFormatter(formatter)
-    # add the handler to the root logger
-    logger.addHandler(console)
 
 # Read next line from each file, if at end of the file loop to the beginning
 def read_file_data(input_file):
@@ -565,8 +542,10 @@ def start_processing():
 
 def send_command_to_inverter(command,value):
     the_command = f"{command_dictionary[command]}{value}"
-    send_command_with_ack_reply(the_command)
+    if debug_data:
+        logger.info(f'Sending \'{command}\' with value {value}')
+    else:
+        send_command_with_ack_reply(the_command)
 
 
-if __name__ == '__main__':
-    start_processing()
+

@@ -15,10 +15,10 @@ from django.http import JsonResponse
 from solar.struct_logger import StructLogger
 from solar.settings import APP_NAME, APP_VERSION
 from tasks import send_command
-from constants import SET_MAX_CURRENT
+from constants import SET_MAX_CURRENT, SET_AC_CURRENT
 
 the_logger = StructLogger()
-the_logger.info(f'Running {APP_NAME} version {APP_VERSION}')
+the_logger.print_app_version()
 
 pv_charge_current = None
 ac_charge_current = None
@@ -46,7 +46,9 @@ class HomePageView(View):
                 the_logger.info(f"Max charge current: {current}")
                 send_command(SET_MAX_CURRENT,current).delay()
             if self.request.POST.get('ac_charge_current_btn'):
-                the_logger.info(f"AC charge current: {self.request.POST.get('ac_charge_current_val')}")
+                current = self.request.POST.get('ac_charge_current_val')
+                the_logger.info(f"AC charge current: {current}")
+                send_command(SET_AC_CURRENT,current).delay()
             battery_recharge_v = self.request.POST.get('battery_recharge_v')
             battery_re_discharge_v = self.request.POST.get('battery_re_discharge_v')
             return render(request, "home.html")
