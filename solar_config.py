@@ -8,6 +8,7 @@ INFLUX_DB = os.getenv('INFLUX_DATABASE','solardb')
 PROCESS_TIME = int(os.getenv('PROCESS_TIME', 60))
 INSTALLATION = os.getenv('INSTALLATION', "test_installation1")
 TIME_OFFSET = int(os.getenv('TIME_OFFSET', 2))
+ZMQ_PORT = os.getenv('ZMQ_PORT', '5555')
 
 if os.getenv('DEBUG_MODE', False) == 'True':
     DEBUG_MODE = True

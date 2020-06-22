@@ -12,6 +12,8 @@ import pytz
 from openpyxl import Workbook
 import sys
 import usb.core
+import zmq
+import json
 
 # Internal imports
 from constants import command_dictionary
@@ -368,8 +370,10 @@ class PythonSolar:
         if result[0:4] == '(ACK':
             logger.info(f'Command {command} processed OK')
             self.request_ratings = True
+            return_val = True
         else:
             logger.error(f'Command {command} error, reply {result}')
+            return_val = False
 
 
     def convert_timestamp_to_datetime(self,in_time):
@@ -485,9 +489,38 @@ class PythonSolar:
         logger.info('Processing thread exit')
 
 
+    def zmq_reader(self):
+        '''
+        ZMQ thread to receive data from the frontend
+        '''
+        logger.info('ZMQ thread entry')
+        while self.processing:
+            try:
+                message = self.socket.recv()
+                # Message is in JSON
+                message_data = json.loads(message)
+                if self.send_command_to_inverter(message_data['command'],message_data['data']):
+                    data = dict(result='OK')
+                else:
+                    data = dict(result='FAIL')
+                self.socket.send_json(data)
+            except Exception as e:
+                logger.error(f'ZMQ error: {str(e)}')
+                time.sleep(1)
+
+
     def start_processing(self):
         if not self.processing:
-            logger.info('Creating thread...')
+            logger.info('Creating threads...')
+            # Create the ZMQ socket and thread
+            context = zmq.Context()
+            self.socket = context.socket(zmq.REP)
+            self.socket.bind(f'tcp://*:{config.ZMQ_PORT}')
+            # Create and start ZMQ read thread - Only applicable when not a Flask app
+            self.zmq_thread = Thread(target=self.zmq_reader, args=())
+            self.zmq_thread.setDaemon(True)
+            self.zmq_thread.start()
+
             # Run reading of data and writing to DB as a background thread
             process_thread = Thread(target=self.process_function)
             self.processing = True
@@ -502,13 +535,15 @@ class PythonSolar:
         the_command = f"{command_dictionary[command]}{value}"
         if self.debug_data:
             logger.info(f'Sending \'{command}\' with value {value}')
+            return_val = True
         else:
-            send_command_with_ack_reply(the_command)
+            return_val = self.send_command_with_ack_reply(the_command)
+        return return_val
 
 
 if __name__ == '__main__':
     '''
-    For testing the module on its own. For running it is executed by 'tasks.py'.
+    Create the PythonSolar class and start the processing.
     '''
     solar_processor = PythonSolar()
     solar_processor.start_processing()

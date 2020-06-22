@@ -4,7 +4,7 @@ Alternative to WatchPower software for RS-232 based solar power inverter. Writte
 
 ## Installation
 
-The project requires Django, Postgres, (InfluxDB) and Grafana.
+The project requires Django, Postgres, InfluxDB and Grafana.
 
 Note: when python modules gave installation errors upon _pipenv install_ run _pipenv shell_ without them in the _Pipfile_ and then run _pip install <modulename>_. Thereafter the shell can be exit and the modules added to the _Pipfile_.
 
@@ -127,46 +127,11 @@ To connect thereafter:
 * _sudo udevadm control --reload_
 * _sudo udevadm trigger_
 
-### Redis
-
-* Installation:
-    * wget http://download.redis.io/redis-stable.tar.gz
-    * tar xvzf redis-stable.tar.gz
-    * cd redis-stable
-    * make
-        * Note: On the Raspberry Pi 4 the make failed, had to add _-latomic_ to the _src/Makefile_ for _redis_server_
-    * sudo make install
-* Test by:
-    * redis-server
-    * In another terminal: redis-cli ping (returns 'PONG')
-    * redis-cli shutdown (to stop server)
-* Installing to use an init script:
-    * sudo cp utils/redis_init_script /etc/init.d/redis_6379
-    * sudo mkdir /etc/redis
-    * sudo cp redis.conf /etc/redis/6379.conf
-    * sudo mkdir /var/redis
-    * sudo mkdir /var/redis/6379
-    * sudo nano /etc/redis/6379.conf
-        * Set __daemonize__ to yes (by default it is set to no)
-        * Set __pidfile__ to /var/run/redis_6379.pid 
-        * Set __logfile__ to /var/log/redis_6379.log
-        * Set __dir__ to /var/redis/6379 (very important step!)
-    * sudo update-rc.d redis_6379 defaults
-    * sudo /etc/init.d/redis_6379 start
-    * Testing installation:
-        * redis-cli ping (returns 'PONG')
-        * redis-cli save (DB saved to '/var/redis/6379/dump.rdb')
-
-### Celery
-
-* pipenv shell
-* pip install Celery
-
 ## Running the application
 
-* To execute (saving celery logs to _/tmp/solar.log_):
+* To execute:
     * pipenv shell
-    * celery -A tasks worker --concurrency=1 --loglevel=info -f /tmp/solar.log
+    * python pythonsolar.py
     * In another terminal: 
         * pipenv shell 
         * python manage.py runserver
