@@ -534,8 +534,10 @@ class PythonSolar:
     def send_command_to_inverter(self, command,value):
         the_command = f"{command_dictionary[command]}{value}"
         if self.debug_data:
+            return_val = False
             logger.info(f'Sending \'{command}\' with value {value}')
-            return_val = True
+            if command != 1:
+                return_val = True
         else:
             return_val = self.send_command_with_ack_reply(the_command)
         return return_val
