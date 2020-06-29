@@ -1,34 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Solar inverter configuration</h1>
+<h1>Inverter data</h1>
 
-<form method="post">{% csrf_token %}
-    <h3>Set max charge current</h3>
-        <input type="text" name="max_charge_current_val" value="30"></td>
-        <input class="btn btn-primary" type="submit" name="max_charge_current_btn" value="Submit" />
-    <h3>Set AC charge current</h3>
-        <input type="text" name="ac_charge_current_val" value="20"></td>
-        <input class="btn btn-primary" type="submit" name="ac_charge_current_btn" value="Submit" />
-    <h3>Set AC charge current</h3>
-        <input type="text" name="battery_redischarge_voltage_val" value="56"></td>
-        <input class="btn btn-primary" type="submit" name="battery_redischarge_voltage_btn" value="Submit" />
-    <h3>Set AC charge current</h3>
-        <input type="text" name="battery_recharge_voltage_val" value="49"></td>
-        <input class="btn btn-primary" type="submit" name="battery_recharge_voltage_btn" value="Submit" />
-    <h3>Set battery cutoff voltage</h3>
-        <input type="text" name="battery_cutoff_voltage_val" value="45"></td>
-        <input class="btn btn-primary" type="submit" name="battery_cutoff_voltage_btn" value="Submit" />
-</form>
-
-<h3>Command result:</h3>
-{% if result %}
-    <ul>
-        <h3>{{ result }}</h3>
-    </ul>
-{% else %}
-    <h3>No results are available.</h3>
-{% endif %}
-
+<h2>Battery %</h2>
+<h2>AC</h2>
+{% load static %}
+<img src="{% static "on.jpg" %}" alt="On image">
+<h2>Solar charge</h2>
+<img src="off.jpg" />
+<h2>AC Power (current and 24 hours)</h2>
+<h2>Solar Power (current and 24 hours)</h2>
 
 {% endblock content %}

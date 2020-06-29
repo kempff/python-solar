@@ -22,11 +22,6 @@ from constants import SET_BATTERY_RECHARGE_VOLTAGE, SET_BATTERY_CUTOFF_VOLTAGE
 the_logger = StructLogger()
 the_logger.print_app_version()
 
-pv_charge_current = None
-ac_charge_current = None
-battery_recharge_v = None
-battery_re_discharge_v = None
-
 # Configure ZMQ
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
@@ -34,48 +29,10 @@ port = os.getenv('ZMQ_PORT', '5555')
 socket.connect(f'tcp://localhost:{port}')
 
 class HomePageView(View):
-    global pv_charge_current
-    global ac_charge_current
-    global battery_recharge_v
-    global battery_re_discharge_v
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         else:
             return render(request, "home.html")
 
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-        else:
-            command = None
-            data = None
-            return_val = None
-            commands = {
-                'max_charge_current_btn' : {'value':'max_charge_current_val','command':SET_MAX_CURRENT},
-                'ac_charge_current_btn' : {'value':'ac_charge_current_val','command':SET_AC_CURRENT},
-                'battery_redischarge_voltage_btn' : {'value':'battery_redischarge_voltage_val','command':SET_AC_CURRENT},
-                'battery_recharge_voltage_btn' : {'value':'battery_recharge_voltage_val','command':SET_AC_CURRENT},
-                'battery_cutoff_voltage_btn' : {'value':'battery_cutoff_voltage_val','command':SET_BATTERY_CUTOFF_VOLTAGE},
-            }
-            for key in commands.keys():
-                if self.request.POST.get(key):
-                    data = self.request.POST.get(commands[key]['value'])
-                    command = commands[key]['command']
-                    the_logger.info(f"{key}: {data} ({command})")
-                    break                
-            # If there is a command, send it via ZMQ
-            if command:
-                data = dict(command=command,data=data)
-                try:
-                    socket.send_json(data)
-                    if socket.poll(1000, zmq.POLLIN):
-                        message = socket.recv().decode('utf8')
-                        return_val = json.loads(message)
-                        the_logger.info(f"Reply: {return_val}")
-                    else:
-                        the_logger.warning("error: message timeout")
-                except Exception as e:
-                    the_logger.error(f'ZMQ error: {str(e)}')
-            return render(request, "home.html", return_val)
 
