@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Inverter data</h1>
-
 <h2>Battery %</h2>
 <h2>AC</h2>
 {% load static %}
-<img src="{% static "on.jpg" %}" alt="On image">
+<img src="{% static "on.jpg" %}" alt="On image"/>
 <h2>Solar charge</h2>
-<img src="off.jpg" />
+<img src="{% static "off.jpg" %}" alt="Off image" />
 <h2>AC Power (current and 24 hours)</h2>
 <h2>Solar Power (current and 24 hours)</h2>
 

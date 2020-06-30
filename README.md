@@ -72,6 +72,15 @@ To connect thereafter:
 * python manage.py runserver
 * Open browser, login and browse to 'http://127.0.0.1:8000/admin/' and create users and groups
 
+#### Static files
+
+* _sudo mkdir /var/www/solar_
+* Add environment variable: STATIC_ROOT='/var/www/solar/'
+* sudo chown to user and group that has access to copy files
+* In project pipenv shell run: _python manage.py collectstatic_ to copy all the files for serving through Nginx
+
+**Note: With DEBUG=True in the settings.py file Django serves the files from the project directory.** 
+
 ### Influx DB
 
 * On Pi: 
