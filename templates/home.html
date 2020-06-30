@@ -1,7 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Battery %</h2>
+<h2>Battery</h2>
+<label> 80%
+    <meter value=80 min=0 low=50 high=70 max=100 optimum=80></meter>
+</label>
+<br>
+<label> 70%
+    <meter value=70 min=0 low=50 high=70 max=100 optimum=80></meter>
+</label>
+<br>
+<label> 40%
+    <meter value=40 min=0 low=50 high=70 max=100 optimum=80></meter>
+</label>
 <h2>AC</h2>
 {% load static %}
 <img src="{% static "on.jpg" %}" alt="On image"/>
