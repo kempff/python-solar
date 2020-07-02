@@ -22,17 +22,25 @@ class _InfluxInterface:
         '''
         Performs the queries and return the result from InfluxDB
         '''
-        db_data = self.influx_client.query(f"SELECT last(\"battery_capacity\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}')")
-        # Found this out by: print(db_data.raw)
-        battery_percentage = db_data.raw['series'][0]['values'][0][1]
+        status_data = {
+            'Battery': {'query_param': 'battery_capacity', 'result': None},
+            'AC Power': {'query_param': 'ac_output_w', 'result': None},
+            'PV Power': {'query_param': 'pv_input_w', 'result': None},
+        }
+
+        for key in status_data:
+            db_data = self.influx_client.query(f"SELECT last(\"{status_data[key]['query_param']}\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}')")
+            # Found this out by: print(db_data.raw)
+            status_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
+
         solar_data = {
-                "battery_percentage": battery_percentage,
+                "battery_percentage": status_data['Battery']['result'],
                 "ac_power": {
-                    "current": 120,
+                    "current": status_data['AC Power']['result'],
                     "24hours": 15000,
                 },
                 "pv_power": {
-                    "current": 220,
+                    "current": status_data['PV Power']['result'],
                     "24hours": 10000,
                 }
             }
