@@ -14,6 +14,7 @@ class _InfluxInterface:
         # Configure DB
         self.influx_client = InfluxDBClient(DATABASES['influx']['INFLUX_HOST'], DATABASES['influx']['INFLUX_PORT'], 
                 database=DATABASES['influx']['INFLUX_DB'])
+        self.installation = DATABASES['influx']['INSTALLATION']
         the_logger.info(f"Influx client: {self.influx_client}")
 
 
@@ -21,8 +22,11 @@ class _InfluxInterface:
         '''
         Performs the queries and return the result from InfluxDB
         '''
+        db_data = self.influx_client.query(f"SELECT last(\"battery_capacity\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}')")
+        # Found this out by: print(db_data.raw)
+        battery_percentage = db_data.raw['series'][0]['values'][0][1]
         solar_data = {
-                "battery_percentage": 70,
+                "battery_percentage": battery_percentage,
                 "ac_power": {
                     "current": 120,
                     "24hours": 15000,
