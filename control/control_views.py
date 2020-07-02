@@ -20,7 +20,7 @@ from constants import SET_MAX_CURRENT, SET_AC_CURRENT, SET_BATTERY_REDISCHARGE_V
 from constants import SET_BATTERY_RECHARGE_VOLTAGE, SET_BATTERY_CUTOFF_VOLTAGE
 
 the_logger = StructLogger()
-the_logger.print_app_version()
+
 
 # Configure ZMQ
 context = zmq.Context()
