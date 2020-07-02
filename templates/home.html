@@ -1,24 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Battery</h2>
-<label> 80%
-    <meter value=80 min=0 low=50 high=70 max=100 optimum=80></meter>
-</label>
-<br>
-<label> 70%
-    <meter value=70 min=0 low=50 high=70 max=100 optimum=80></meter>
-</label>
-<br>
-<label> 40%
-    <meter value=40 min=0 low=50 high=70 max=100 optimum=80></meter>
-</label>
-<h2>AC</h2>
-{% load static %}
-<img src="{% static "on.jpg" %}" alt="On image"/>
-<h2>Solar charge</h2>
-<img src="{% static "off.jpg" %}" alt="Off image" />
-<h2>AC Power (current and 24 hours)</h2>
-<h2>Solar Power (current and 24 hours)</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h2>Battery</h2>
+            <label> {{ solar_data.battery_percentage }}%
+                <meter value=80 min=0 low=50 high=70 max=100 optimum=80></meter>
+            </label>
+            <br>
+            <h2>AC</h2>
+            {% load static %}
+            <img src="{% static "on.jpg" %}" alt="On image"/>
+            <h2>Solar charge</h2>
+            <img src="{% static "off.jpg" %}" alt="Off image" />
+        </div>
+        <div class="col-sm">
+            <h2>AC Power</h2>
+            <p>Current: {{ solar_data.ac_power.current }} W</p>
+            <p>Past 24 hours: {{ solar_data.ac_power.24hours }} W</p>
+            <h2>Solar Power</h2>
+            <p>Current: {{ solar_data.pv_power.current }} W</p>
+            <p>Past 24 hours: {{ solar_data.pv_power.24hours }} W</p>
+        </div>
+    </div>
+</div>
 
 {% endblock content %}

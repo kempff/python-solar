@@ -33,6 +33,17 @@ class HomePageView(View):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         else:
-            return render(request, "home.html")
+            solar_data = {
+                "battery_percentage": 70,
+                "ac_power": {
+                    "current": 120,
+                    "24hours": 15000,
+                },
+                "pv_power": {
+                    "current": 220,
+                    "24hours": 10000,
+                }
+            }
+            return render(request, "home.html", {'solar_data':solar_data})
 
 
