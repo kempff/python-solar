@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% load static %}
 <div class="container">
     <div class="row">
         <div class="col-sm">
@@ -10,10 +11,17 @@
             </label>
             <br>
             <h2>AC</h2>
-            {% load static %}
-            <img src="{% static "on.jpg" %}" alt="On image"/>
-            <h2>Solar charge</h2>
-            <img src="{% static "off.jpg" %}" alt="Off image" />
+            {% if solar_data.ac_on == 1 %}
+                <img src="{% static "on.jpg" %}" alt="On image"/>
+            {% else %}
+                <img src="{% static "off.jpg" %}" alt="Off image" />
+            {% endif %}
+            <h2>Battery charging</h2>
+            {% if solar_data.battery_charge == 1 %}
+                <img src="{% static "on.jpg" %}" alt="On image"/>
+            {% else %}
+                <img src="{% static "off.jpg" %}" alt="Off image" />
+            {% endif %}
         </div>
         <div class="col-sm">
             <h2>AC Power</h2>
@@ -22,6 +30,8 @@
             <h2>Solar Power</h2>
             <p>Current: {{ solar_data.pv_power.current }} W</p>
             <p>Past 24 hours: {{ solar_data.pv_power.24hours }} W</p>
+            <h2>Errors: </h2>
+            <p>None</p>
         </div>
     </div>
 </div>

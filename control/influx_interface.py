@@ -20,12 +20,14 @@ class _InfluxInterface:
 
     def get_status_data(self):
         '''
-        Performs the queries and return the result from InfluxDB
+        Performs the queries and return the result from InfluxDB. Can probably do it in 1 query...
         '''
         status_data = {
             'Battery': {'query_param': 'battery_capacity', 'result': None},
             'AC Power': {'query_param': 'ac_output_w', 'result': None},
             'PV Power': {'query_param': 'pv_input_w', 'result': None},
+            'Charging On': {'query_param': 'charging_on', 'result': None},
+            'AC Voltage': {'query_param': 'ac_output_voltage', 'result': None},
         }
 
         for key in status_data:
@@ -33,8 +35,14 @@ class _InfluxInterface:
             # Found this out by: print(db_data.raw)
             status_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
 
+        ac_on = 0
+        if status_data['AC Voltage']['result'] > 210:
+            ac_on = 1
+
         solar_data = {
                 "battery_percentage": status_data['Battery']['result'],
+                "ac_on": ac_on,
+                "battery_charge": status_data['Charging On']['result'],
                 "ac_power": {
                     "current": status_data['AC Power']['result'],
                     "24hours": 15000,
@@ -42,7 +50,10 @@ class _InfluxInterface:
                 "pv_power": {
                     "current": status_data['PV Power']['result'],
                     "24hours": 10000,
-                }
+                },
+                "errors": [
+                    # TODO retrieve all errors of last 24 hours
+                ],
             }
         the_logger.debug(f'Status: {solar_data}')
         return solar_data
