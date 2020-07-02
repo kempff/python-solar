@@ -88,6 +88,12 @@ DATABASES = {
         'PASSWORD': os.getenv('POSTGRES_PASSWORD',''),
         'HOST': '127.0.0.1',
         'PORT': '5432',
+    },
+    'influx': {
+        'INFLUX_HOST': os.getenv('INFLUX_HOST','localhost'),
+        'INFLUX_PORT': os.getenv('INFLUX_PORT','8086'),
+        'INFLUX_DB': os.getenv('INFLUX_DATABASE','solardb'),
+        'INSTALLATION': os.getenv('INSTALLATION', "test_installation1"),
     }
 }
 
