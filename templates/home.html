@@ -1,6 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<script type="text/javascript">
+    var append_increment = 0;
+    setInterval(function() {
+        console.log('calling')
+        $.ajax({
+            type: "GET",
+            url: "home.html",  // URL to your view that serves new info
+        })
+        .done(function(response) {
+        });
+    }, 1000)
+ </script>
+ 
+
 {% load static %}
 <div class="container">
     <div class="row">
