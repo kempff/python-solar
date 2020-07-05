@@ -31,7 +31,24 @@
             <p>Current: {{ solar_data.pv_power.current }} W</p>
             <p>Past 24 hours: {{ solar_data.pv_power.24hours }} W</p>
             <h2>Errors: </h2>
-            <p>None</p>
+            {% if solar_data.errors %}
+            <table>
+                <tr>
+                    <th>Time</th>
+                    <th>Severity</th>
+                    <th>Error</th>
+                </tr>
+                {% for item in solar_data.errors %}
+                <tr> 
+                    <td>{{ item.timestamp }}</td>
+                    <td>{{ item.severity }}</td>
+                    <td>{{ item.error_message }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <p>None</p>
+            {% endif %}
         </div>
     </div>
 </div>

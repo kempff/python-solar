@@ -1,8 +1,10 @@
 from influxdb import InfluxDBClient
+import pytz
+from datetime import datetime
 
 # Load internal modules
 from solar.struct_logger import StructLogger
-from solar.settings import DATABASES
+from solar.settings import DATABASES, TIME_ZONE
 
 
 the_logger = StructLogger()
@@ -39,6 +41,28 @@ class _InfluxInterface:
         if status_data['AC Voltage']['result'] > 210:
             ac_on = 1
 
+        # Retrieve AC and PV power for previous 24 hours
+
+        # Retrieve last 10 errors for previous 24 hours
+        tz = pytz.timezone(TIME_ZONE)
+        db_data = self.influx_client.query(f"""
+            SELECT \"severity\", \"message\" FROM \"system_error\" WHERE (\"installation\" = '{self.installation}') 
+            AND time > now() - 24h 
+            ORDER BY time DESC LIMIT 10
+            """)
+        error_list = []
+        for error in db_data.raw['series'][0]['values']:
+            # Convert time to local timezone
+            time_string = error[0][:-4] + "+0000"
+            utc_time = datetime.strptime(time_string,"%Y-%m-%dT%H:%M:%S.%f%z")
+            local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(tz)
+            error_value = {
+                'timestamp': local_time.strftime("%Y-%m-%d %H:%M:%S"),
+                'severity': error[1],
+                'error_message': error[2] 
+            }
+            error_list.append(error_value)
+
         solar_data = {
                 "battery_percentage": status_data['Battery']['result'],
                 "ac_on": ac_on,
@@ -51,9 +75,7 @@ class _InfluxInterface:
                     "current": status_data['PV Power']['result'],
                     "24hours": 10000,
                 },
-                "errors": [
-                    # TODO retrieve all errors of last 24 hours
-                ],
+                "errors": error_list,
             }
         the_logger.debug(f'Status: {solar_data}')
         return solar_data
