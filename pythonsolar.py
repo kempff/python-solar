@@ -57,10 +57,10 @@ class PythonSolar:
                 usb_dev.detach_kernel_driver(interface)
             self.usb_dev.set_interface_altsetting(0,0)
 
-        self.mode_data = []          # From QMOD command
-        self.status_data = []        # From QPIGS command
-        self.ratings_data = []       # From QPIRI command
-        self.error_data = []         # From QPIWS command
+        self.mode_data = None          # From QMOD command
+        self.status_data = None        # From QPIGS command
+        self.ratings_data = None       # From QPIRI command
+        self.error_data = None         # From QPIWS command
 
         logger.setLevel(logging.INFO)
         logger.info(f'Running {APP_NAME} version {APP_VERSION}')
@@ -122,11 +122,27 @@ class PythonSolar:
         return res
 
 
+    def save_mode_data(self,the_data):
+        self.mode_data = the_data
+
+    
+    def save_status_data(self, the_data):
+        self.status_data = the_data
+
+    
+    def save_ratings_data(self, the_data):
+        self.ratings_data = the_data
+
+
+    def save_error_data(self, the_data):
+        self.error_data = the_data
+
+
     def process_result(self,command, result_data):
-        result_dictionary = {'QMOD' : self.mode_data,
-                            'QPIRI': self.ratings_data,
-                            'QPIGS': self.status_data,
-                            'QPIWS': self.error_data}
+        result_dictionary = {'QMOD' : self.save_mode_data,
+                            'QPIRI': self.save_ratings_data,
+                            'QPIGS': self.save_status_data,
+                            'QPIWS': self.save_error_data}
         hex_data = ":".join("{:02x}".format(ord(c)) for c in result_data)
         logger.debug("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
         if result_data:
@@ -136,7 +152,7 @@ class PythonSolar:
                 crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
                 logger.debug('Check data len {0}'.format(len(check_data)))
                 if crc == rx_crc or self.debug_data:
-                    result_dictionary[command] = result_data[1:-3].split()
+                    result_dictionary[command](result_data[1:-3].split())
                 else:
                     logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
                     logger.error('Data: {0}'.format(result_data[:].encode('utf-8')))
@@ -353,13 +369,13 @@ class PythonSolar:
                     logger.debug(f"Mode data: {self.mode_data}")
                 if len(self.status_data) > 0:
                     logger.debug(f"Status data: {self.status_data}")
-                    populate_status_data(self.status_data, self.mode_data)
+                    self.populate_status_data(self.status_data, self.mode_data)
                 if len(self.ratings_data) > 0:
                     logger.debug(f"Ratings data: {self.ratings_data}")
-                    populate_ratings_data(self.ratings_data)
+                    self.populate_ratings_data(self.ratings_data)
                 if len(self.error_data) > 0:
                     logger.debug(f"Error data: {self.error_data}")
-                    populate_error_data(self.error_data)
+                    self.populate_error_data(self.error_data)
         except Exception as e:
             logger.error(str(e))
 
