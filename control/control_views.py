@@ -12,14 +12,17 @@ from django.shortcuts import redirect
 from django.http import JsonResponse
 import zmq
 import json
+import time
 
 # Load internal modules
 from solar.struct_logger import StructLogger
 from solar.settings import APP_NAME, APP_VERSION
 from constants import SET_MAX_CURRENT, SET_AC_CURRENT, SET_BATTERY_REDISCHARGE_VOLTAGE 
 from constants import SET_BATTERY_RECHARGE_VOLTAGE, SET_BATTERY_CUTOFF_VOLTAGE
+from control.influx_interface import InfluxInterface
 
 the_logger = StructLogger()
+influx_interface = InfluxInterface()
 
 
 # Configure ZMQ
@@ -62,11 +65,18 @@ class ControlView(View):
                     socket.send_json(data)
                     if socket.poll(1000, zmq.POLLIN):
                         message = socket.recv().decode('utf8')
-                        return_val = json.loads(message)
-                        the_logger.info(f"Reply: {return_val}")
+                        command_data = json.loads(message)
+                        the_logger.info(f"Reply: {command_data}")
+                        time.sleep(2)
+                        solar_data = influx_interface.get_ratings_data()
+                        return_val = {
+                            'command_result': command_data,
+                            'ratings': solar_data,
+                        }
+                        the_logger.info(f"Ratings reply: {return_val}")
                     else:
                         the_logger.warning("error: message timeout")
                 except Exception as e:
                     the_logger.error(f'ZMQ error: {str(e)}')
-            return render(request, "control.html", return_val)
+            return render(request, "control.html", {'solar_data': return_val})
 

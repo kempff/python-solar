@@ -8,27 +8,27 @@
         <div class="col-sm">
             <form method="post">{% csrf_token %}
                 <h3>Set max charge current</h3>
-                    <input type="text" name="max_charge_current_val" value="30"></td>
+                    <input type="text" name="max_charge_current_val" value= {{ solar_data.ratings.max_charge_current }}></td>
                     <input class="btn btn-primary" type="submit" name="max_charge_current_btn" value="Submit" />
                 <h3>Set AC charge current</h3>
-                    <input type="text" name="ac_charge_current_val" value="20"></td>
+                    <input type="text" name="ac_charge_current_val" value= {{ solar_data.ratings.max_ac_charge_current }}></td>
                     <input class="btn btn-primary" type="submit" name="ac_charge_current_btn" value="Submit" />
                 <h3>Set AC charge current</h3>
-                    <input type="text" name="battery_redischarge_voltage_val" value="56"></td>
+                    <input type="text" name="battery_redischarge_voltage_val" value={{ solar_data.ratings.battery_redischarge_voltage }}></td>
                     <input class="btn btn-primary" type="submit" name="battery_redischarge_voltage_btn" value="Submit" />
                 <h3>Set AC charge current</h3>
-                    <input type="text" name="battery_recharge_voltage_val" value="49"></td>
+                    <input type="text" name="battery_recharge_voltage_val" value={{ solar_data.ratings.battery_recharge_voltage }}></td>
                     <input class="btn btn-primary" type="submit" name="battery_recharge_voltage_btn" value="Submit" />
                 <h3>Set battery cutoff voltage</h3>
-                    <input type="text" name="battery_cutoff_voltage_val" value="45"></td>
+                    <input type="text" name="battery_cutoff_voltage_val" value={{ solar_data.ratings.battery_cutoff_voltage }}></td>
                     <input class="btn btn-primary" type="submit" name="battery_cutoff_voltage_btn" value="Submit" />
             </form>
         </div>
         <div class="col-sm">
             <h3>Response</h3>
-            {% if result %}
+            {% if solar_data.command_result %}
                 <ul>
-                    {% if result == 'OK' %}
+                    {% if solar_data.command_result.result == 'OK' %}
                         <img src="{% static "yes.jpg" %}" alt="OK"/>
                     {% else %}
                         <img src="{% static "no.jpg" %}" alt="FAILED"/>    

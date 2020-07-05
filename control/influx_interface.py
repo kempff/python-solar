@@ -58,6 +58,36 @@ class _InfluxInterface:
         the_logger.debug(f'Status: {solar_data}')
         return solar_data
 
+
+    def get_ratings_data(self):
+        '''
+        Performs the queries and return the result from InfluxDB. Can probably do it in 1 query...
+        '''
+        ratings_data = {
+            'Max charge A': {'query_param': 'max_charge_current', 'result': None},
+            'AC charge A': {'query_param': 'max_ac_charge_current', 'result': None},
+            'Battery redischarge V': {'query_param': 'battery_redischarge_voltage', 'result': None},
+            'Battery recharge V': {'query_param': 'battery_recharge_voltage', 'result': None},
+            'Battery cutoff V': {'query_param': 'battery_under_voltage', 'result': None},
+        }
+
+        for key in ratings_data:
+            db_data = self.influx_client.query(f"SELECT last(\"{ratings_data[key]['query_param']}\") FROM \"system_rating\" WHERE (\"installation\" = '{self.installation}')")
+            # Found this out by: print(db_data.raw)
+            ratings_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
+
+
+        solar_data = {
+                "max_charge_current": ratings_data['Max charge A']['result'],
+                "max_ac_charge_current": ratings_data['AC charge A']['result'],
+                "battery_redischarge_voltage": ratings_data['Battery redischarge V']['result'],
+                "battery_recharge_voltage": ratings_data['Battery recharge V']['result'],
+                "battery_cutoff_voltage": ratings_data['Battery cutoff V']['result'],
+            }
+        the_logger.debug(f'Ratings: {solar_data}')
+        return solar_data
+    
+
 # Create the InfluxDB interface object
 _influx_interface = _InfluxInterface()
 
