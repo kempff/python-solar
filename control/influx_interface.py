@@ -41,7 +41,14 @@ class _InfluxInterface:
         if status_data['AC Voltage']['result'] > 210:
             ac_on = 1
 
-        # Retrieve AC and PV power for previous 24 hours
+        # Retrieve AC and PV power for previous 24 hours. Get the average and multiply by 24.
+        db_data = self.influx_client.query(f"""
+            SELECT mean(\"ac_output_w\"), mean(\"pv_input_w\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}') 
+            AND time > now() - 24h 
+            """)
+        print(db_data.raw['series'][0]['values'])
+        ac_power_24h = round(24 * db_data.raw['series'][0]['values'][0][1])
+        pv_power_24h = round(24 * db_data.raw['series'][0]['values'][0][2])
 
         # Retrieve last 10 errors for previous 24 hours
         tz = pytz.timezone(TIME_ZONE)
@@ -69,11 +76,11 @@ class _InfluxInterface:
                 "battery_charge": status_data['Charging On']['result'],
                 "ac_power": {
                     "current": status_data['AC Power']['result'],
-                    "24hours": 15000,
+                    "24hours": ac_power_24h,
                 },
                 "pv_power": {
                     "current": status_data['PV Power']['result'],
-                    "24hours": 10000,
+                    "24hours": pv_power_24h,
                 },
                 "errors": error_list,
             }
