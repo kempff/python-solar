@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="spinner-border text-primary" role="status">
-    <span class="sr-only">Loading...</span>
-</div>
 
 {% load static %}
 <div class="container">
@@ -24,7 +21,36 @@
                     <input class="btn btn-primary" type="submit" name="battery_recharge_voltage_btn" value="Submit" />
                 <h3>Set battery cutoff voltage</h3>
                     <input type="text" name="battery_cutoff_voltage_val" value={{ solar_data.ratings.battery_cutoff_voltage }}></td>
-                    <input class="btn btn-primary" type="submit" name="battery_cutoff_voltage_btn" value="Submit" />
+                    <button class="btn btn-primary" type="submit" name="battery_cutoff_voltage_btn" ><span id="sid"></span>Submit</button>
+
+                    <script>
+                        $(document).ready(function() {
+                        // Solution for disabling the submit temporarily for all the submit buttons.
+                        // Avoids double form submit.
+                        // Doing it directly on the submit click made the form not to submit in Chrome.
+                        // This works in FF and Chrome.
+                        $('form').on('submit', function(e){
+                            var submit = $(this).find('[clicked=true]')[0];
+                            if (!submit.hasAttribute('disabled'))
+                            {
+                            submit.setAttribute('disabled', true);
+                            $(this).find('span').addClass("spinner-border spinner-border-sm");
+                            $('#sid').show();
+                            
+                            setTimeout(function(){
+                                submit.removeAttribute('disabled');
+                                $('#sid').hide();
+                                
+                            }, 1000);
+                            }
+                            submit.removeAttribute('clicked');
+                            e.preventDefault();
+                        });
+                        $('[type=submit]').on('click touchstart', function(){
+                            this.setAttribute('clicked', true);
+                        });
+                        });
+                    </script>
             </form>
         </div>
         <div class="col-sm">
