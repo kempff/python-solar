@@ -2,11 +2,12 @@
 
 {% block content %}
 
+
 {% load static %}
 <div class="container">
     <div class="row">
         <div class="col-sm">
-            <form method="post">{% csrf_token %}
+            <form method="post" id="controlForm">{% csrf_token %}
                 <h3>Set max charge current</h3>
                     <input type="text" name="max_charge_current_val" value= {{ solar_data.ratings.max_charge_current }}></td>
                     <input class="btn btn-primary" type="submit" name="max_charge_current_btn" value="Submit" />
@@ -18,39 +19,10 @@
                     <input class="btn btn-primary" type="submit" name="battery_redischarge_voltage_btn" value="Submit" />
                 <h3>Set AC charge current</h3>
                     <input type="text" name="battery_recharge_voltage_val" value={{ solar_data.ratings.battery_recharge_voltage }}></td>
-                    <input class="btn btn-primary" type="submit" name="battery_recharge_voltage_btn" value="Submit" />
+                    <input class="btn btn-primary" type="submit" name="battery_recharge_voltage_btn" value="Submit"/>
                 <h3>Set battery cutoff voltage</h3>
                     <input type="text" name="battery_cutoff_voltage_val" value={{ solar_data.ratings.battery_cutoff_voltage }}></td>
-                    <button class="btn btn-primary" type="submit" name="battery_cutoff_voltage_btn" ><span id="sid"></span>Submit</button>
-
-                    <script>
-                        $(document).ready(function() {
-                        // Solution for disabling the submit temporarily for all the submit buttons.
-                        // Avoids double form submit.
-                        // Doing it directly on the submit click made the form not to submit in Chrome.
-                        // This works in FF and Chrome.
-                        $('form').on('submit', function(e){
-                            var submit = $(this).find('[clicked=true]')[0];
-                            if (!submit.hasAttribute('disabled'))
-                            {
-                            submit.setAttribute('disabled', true);
-                            $(this).find('span').addClass("spinner-border spinner-border-sm");
-                            $('#sid').show();
-                            
-                            setTimeout(function(){
-                                submit.removeAttribute('disabled');
-                                $('#sid').hide();
-                                
-                            }, 1000);
-                            }
-                            submit.removeAttribute('clicked');
-                            e.preventDefault();
-                        });
-                        $('[type=submit]').on('click touchstart', function(){
-                            this.setAttribute('clicked', true);
-                        });
-                        });
-                    </script>
+                    <input class="btn btn-primary" type="submit" name="battery_cutoff_voltage_btn" value="Submit"/>
             </form>
         </div>
         <div class="col-sm">
