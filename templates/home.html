@@ -38,6 +38,8 @@
             {% else %}
                 <img src="{% static "off.jpg" %}" alt="Off image" />
             {% endif %}
+            <h2>Data processed</h2>
+            <p>{{ solar_data.last_status_time }}</p>
         </div>
         <div class="col-sm">
             <h2>AC Power</h2>

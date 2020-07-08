@@ -17,13 +17,26 @@ class _InfluxInterface:
         self.influx_client = InfluxDBClient(DATABASES['influx']['INFLUX_HOST'], DATABASES['influx']['INFLUX_PORT'], 
                 database=DATABASES['influx']['INFLUX_DB'])
         self.installation = DATABASES['influx']['INSTALLATION']
+        self.tz = pytz.timezone(TIME_ZONE)
         the_logger.info(f"Influx client: {self.influx_client}")
+
+
+    def convert_time(self, input_value):
+        '''
+        Convert time to local timezone
+        '''
+        time_string = input_value + "+0000"
+        utc_time = datetime.strptime(time_string,"%Y-%m-%dT%H:%M:%S.%f%z")
+        local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(self.tz)
+        return_val = local_time.strftime("%Y-%m-%d %H:%M:%S")
+        return return_val
 
 
     def get_status_data(self):
         '''
         Performs the queries and return the result from InfluxDB. Can probably do it in 1 query...
         '''
+        last_status_time = None
         status_data = {
             'Battery': {'query_param': 'battery_capacity', 'result': None},
             'AC Power': {'query_param': 'ac_output_w', 'result': None},
@@ -46,12 +59,14 @@ class _InfluxInterface:
             SELECT mean(\"ac_output_w\"), mean(\"pv_input_w\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}') 
             AND time > now() - 24h 
             """)
-        print(db_data.raw['series'][0]['values'])
+        
+        # To view the data: print(db_data.raw['series'][0]['values'])
+        last_status_time = self.convert_time(db_data.raw['series'][0]['values'][0][0][:-4])
         ac_power_24h = round(24 * db_data.raw['series'][0]['values'][0][1])
         pv_power_24h = round(24 * db_data.raw['series'][0]['values'][0][2])
 
         # Retrieve last 10 errors for previous 24 hours
-        tz = pytz.timezone(TIME_ZONE)
+        
         db_data = self.influx_client.query(f"""
             SELECT \"severity\", \"message\" FROM \"system_error\" WHERE (\"installation\" = '{self.installation}') 
             AND time > now() - 24h 
@@ -59,18 +74,16 @@ class _InfluxInterface:
             """)
         error_list = []
         for error in db_data.raw['series'][0]['values']:
-            # Convert time to local timezone
-            time_string = error[0][:-4] + "+0000"
-            utc_time = datetime.strptime(time_string,"%Y-%m-%dT%H:%M:%S.%f%z")
-            local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(tz)
+           
             error_value = {
-                'timestamp': local_time.strftime("%Y-%m-%d %H:%M:%S"),
+                'timestamp': self.convert_time(error[0][:-4]),
                 'severity': error[1],
                 'error_message': error[2] 
             }
             error_list.append(error_value)
 
         solar_data = {
+                "last_status_time": last_status_time,
                 "battery_percentage": status_data['Battery']['result'],
                 "ac_on": ac_on,
                 "battery_charge": status_data['Charging On']['result'],
