@@ -19,7 +19,8 @@ Note: when python modules gave installation errors upon _pipenv install_ run _pi
 * git flow init
 * git checkout develop (or other feature branch)
 * pipenv install
-* If crc16 and psycopg fails: pipenv shell, pip install crc16==0.1.1, pip install psycopg2-binary==2.8.4, exit, pipenv install
+* If crc16, zmq and psycopg fails: pipenv shell, pip install crc16==0.1.1, pip install psycopg2-binary==2.8.4, pip install pyzmq==19.0.0,
+exit, pipenv install
 
 ### Python 3.7
 
@@ -125,6 +126,7 @@ To connect thereafter:
 * To set default dashboard:
     * Logon as an admin and under Grafana Menu > Main Org > Preferences you can set the home dashboard for your organization.
 
+Note: a default _grafana.ini_ file is included in the _grafana_ directory of the code.
 
 ### USB
 
@@ -196,18 +198,19 @@ upstream grafana {
 
 server {
     listen 80;
-    access_log /home/pi/python_solar/logs/nginx-access.log;
-    error_log /home/pi/python_solar/logs/nginx-error.log;
+    access_log /home/sysadmin/Projects/python_solar/logs/nginx-access.log;
+    error_log /home/sysadmin/Projects/python_solar/logs/nginx-error.log;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static {
-        root home/pi/python-solar;
+        root var/www/solar;
     }
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/home/pi/python-solar/python-solar.sock;
+        proxy_pass http://unix:/home/sysadmin/Projects/python-solar/python-solar.sock;
     }
+
 
     location /grafana/ {
         proxy_pass http://grafana/;
