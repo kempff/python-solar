@@ -251,7 +251,7 @@ WantedBy=multi-user.target
 
 ```
 * _sudo systemctl start solar_
-* _sudo systemctl start enable_
+* _sudo systemctl enable solar_
 
 ## Access from Virtualbox
 
