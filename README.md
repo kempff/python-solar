@@ -198,8 +198,8 @@ upstream grafana {
 
 server {
     listen 80;
-    access_log /home/sysadmin/Projects/python_solar/logs/nginx-access.log;
-    error_log /home/sysadmin/Projects/python_solar/logs/nginx-error.log;
+    access_log /home/pi/python-solar/logs/nginx-access.log;
+    error_log /home/pi/python-solar/logs/nginx-error.log;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static {
@@ -208,7 +208,7 @@ server {
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/home/sysadmin/Projects/python-solar/python-solar.sock;
+        proxy_pass http://unix:/home/pi/python-solar/python-solar.sock;
     }
 
 
