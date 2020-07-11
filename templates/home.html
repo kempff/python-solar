@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<script type="text/javascript">
+    // Reload home page every 1 minute, the "GET" resulted in new data from Django.
+    var append_increment = 0;
+    setInterval(function() {
+        $.ajax({
+            type: "GET",
+            url: "home",  
+        })
+        .done(function(response) {
+            location.reload();
+        });
+    }, 60000)
+ </script>
+ 
+
+{% load static %}
+<div class="container" id="_reloadThis">
+    <div class="row">
+        <div class="col-sm">
+            <h2>Battery</h2>
+            <label> {{ solar_data.battery_percentage }}%
+                <meter value={{ solar_data.battery_percentage }} min=0 low=50 high=70 max=100 optimum=80></meter>
+            </label>
+            <br>
+            <h2>AC</h2>
+            {% if solar_data.ac_on == 1 %}
+                <img src="{% static "on.jpg" %}" alt="On image"/>
+            {% else %}
+                <img src="{% static "off.jpg" %}" alt="Off image" />
+            {% endif %}
+            <h2>Battery charging</h2>
+            {% if solar_data.battery_charge == 1 %}
+                <img src="{% static "on.jpg" %}" alt="On image"/>
+            {% else %}
+                <img src="{% static "off.jpg" %}" alt="Off image" />
+            {% endif %}
+            <h2>Data processed</h2>
+            <p>{{ solar_data.last_status_time }}</p>
+        </div>
+        <div class="col-sm">
+            <h2>AC Power</h2>
+            <p>Current: {{ solar_data.ac_power.current }} W</p>
+            <p>Past 24 hours: {{ solar_data.ac_power.24hours }} W</p>
+            <h2>Solar Power</h2>
+            <p>Current: {{ solar_data.pv_power.current }} W</p>
+            <p>Past 24 hours: {{ solar_data.pv_power.24hours }} W</p>
+            <h2>Errors: </h2>
+            {% if solar_data.errors %}
+            <table>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Time</th>
+                        <th scope="col">Severity</th>
+                        <th scope="col">Error</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in solar_data.errors %}
+                    <tr> 
+                        <td>{{ item.timestamp }}</td>
+                        <td>{{ item.severity }}</td>
+                        <td>{{ item.error_message }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+            {% else %}
+                <p>None</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
