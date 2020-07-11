@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8cf8fd2d8c6b4b4efc7ea61000570f334e5516b1df04e414b54ffa286c10577f"
+            "sha256": "b328a57f904b7bc71f192879c85f4f96dd0ca5f133146bbb5e351212ec8d9236"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.8"
+            "python_version": "3.7"
         },
         "sources": [
             {
@@ -43,10 +43,6 @@
             ],
             "index": "pypi",
             "version": "==0.1.1"
-        },
-        "django": {
-            "index": "pypi",
-            "version": "==2.1.7"
         },
         "et-xmlfile": {
             "hashes": [

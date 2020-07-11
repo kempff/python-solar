@@ -11,11 +11,10 @@ colorama = "==0.4.1"
 pyusb = "==1.0.2"
 openpyxl = "==2.5.14"
 gunicorn = "==19.9.0"
-django = "==2.1.7"
 psycopg2-binary = "==2.8.4"
 crc16 = "==0.1.1"
 influxdb = "==5.2.3"
 pyzmq = "==19.0.0"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
