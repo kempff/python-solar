@@ -132,6 +132,12 @@ To connect thereafter:
     * Select each graph as a favorite by clicking on the star
     * Change the organisation name to reflect the installation
     * Default screen: Configuration > Preferences you can set the home dashboard for your organization.
+    * Setup alert notification in Alerting > Notification Channels:
+        * Add Telegram channel
+        * Create a Telegram group chat
+        * In the Telegram group chat invite @RawDataBot to the chat and get the chat ID from the JSON message
+        * Remove the @RawDataBot again
+        * At the BotFather chat send _/mybots_ and get the Bot API token there
 * Disable the login in Grafana and change user to view only:
     * sudo geany /etc/grafana/grafana.ini
     * Edit the values in the _[auth.anonymous]_ section
