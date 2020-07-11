@@ -187,10 +187,6 @@ WantedBy=multi-user.target
 * _sudo geany /etc/nginx/sites-available/python-solar_
 
 ```
-upstream grafana {
-        server localhost:3000;
-    }
-
 server {
     listen 80;
     access_log /home/pi/python-solar/logs/nginx-access.log;
@@ -206,9 +202,10 @@ server {
         proxy_pass http://unix:/home/pi/python-solar/python-solar.sock;
     }
 
-
     location /grafana/ {
-        proxy_pass http://grafana/;
+        rewrite ^/grafana(.*) $1 break;
+        proxy_pass http://localhost:3000/;
+        proxy_set_header Host $http_host;
     }
 }
 ```

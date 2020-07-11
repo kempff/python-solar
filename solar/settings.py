@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'ybsmi(g)@#5cpt9)b9$5umbm&aun6o3d)yonim)j!ges92(2=r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Note: Remote.it changes the host every time. Keep it at '*' until a better solution is found
 ALLOWED_HOSTS = ['*']
