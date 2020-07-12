@@ -174,6 +174,8 @@ After=network.target
 [Service]
 User=pi
 Group=pi
+Restart=always
+RestartSec=60
 WorkingDirectory=/home/pi/python-solar
 EnvironmentFile=/home/pi/python-solar/.env
 ExecStart=<gunicorn path> --access-logfile - --workers 3 --timeout 600 --bind unix:/home/pi/python-solar/python-solar.sock solar.wsgi:application

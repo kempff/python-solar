@@ -53,8 +53,8 @@ class PythonSolar:
             productId = 0x5161
             interface = 0
             self.usb_dev = usb.core.find(idVendor=vendorId, idProduct=productId)
-            if usb_dev.is_kernel_driver_active(interface):
-                usb_dev.detach_kernel_driver(interface)
+            if self.usb_dev.is_kernel_driver_active(interface):
+                self.usb_dev.detach_kernel_driver(interface)
             self.usb_dev.set_interface_altsetting(0,0)
 
         self.mode_data = None          # From QMOD command
@@ -66,7 +66,7 @@ class PythonSolar:
         logger.info(f'Running {APP_NAME} version {APP_VERSION}')
         logger.info(f"Influx DB config: {config.INFLUX_HOST}, {config.INFLUX_PORT}, {config.INFLUX_DB}")
         if not self.debug_data:
-            logger.info("USB info: {0}".format(usb_dev))
+            logger.info("USB info: {0}".format(self.usb_dev))
         logger.setLevel(config.LOG_LEVEL)
 
     # Read next line from each file, if at end of the file loop to the beginning
@@ -113,7 +113,7 @@ class PythonSolar:
         while '\r' not in res and i<20:
             try:
                 res+="".join([chr(i) for i in self.usb_dev.read(0x81, 8, timeout) if i!=0x00])
-            except self.usb.core.USBError as e:
+            except usb.core.USBError as e:
                 if e.errno == 110:
                     pass
                 else:
@@ -181,24 +181,24 @@ class PythonSolar:
         else:
             try:
                 for the_cmd in cyclic_commands:    
-                    self.send_command(format_data(the_cmd))
+                    self.send_command(self.format_data(the_cmd))
                     result = self.get_result()
                     logger.debug(f"{the_cmd}: {result}")
                     self.process_result(the_cmd, result)
                     time.sleep(1)
                 # If the frontend configured something, request the ratings
                 if self.request_ratings:
-                    self.send_command(format_data('QPIRI'))
+                    self.send_command(self.format_data('QPIRI'))
                     result = self.get_result()
                     logger.debug(result)
                     self.process_result('QPIRI', result)
                     request_ratings = False
-                errors = 0
+                self.errors = 0
             except Exception as e:
                 logger.error(f"Send command error {e}")
                 self.errors+=1
                 # Too many errors - exit app. 'systemctl' will reload
-                if errors > 10:
+                if self.errors > 10:
                     exit(1)
 
 
@@ -381,7 +381,7 @@ class PythonSolar:
 
 
     def send_command_with_ack_reply(self,command):
-        self.send_command(format_data(command))
+        self.send_command(self.format_data(command))
         result = get_result()
         if result[0:4] == '(ACK':
             logger.info(f'Command {command} processed OK')
