@@ -20,7 +20,7 @@ from constants import command_dictionary
 import solar_config as config
 from solar.struct_logger import StructLogger
 
-APP_VERSION = "0.1.0"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.1.1"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Setup logging
@@ -365,15 +365,15 @@ class PythonSolar:
         try:
             if self.write_to_db:
                 logger.info("Writing to database...")
-                if len(self.mode_data) > 0:
+                if self.mode_data:
                     logger.debug(f"Mode data: {self.mode_data}")
-                if len(self.status_data) > 0:
+                if self.status_data:
                     logger.debug(f"Status data: {self.status_data}")
                     self.populate_status_data(self.status_data, self.mode_data)
-                if len(self.ratings_data) > 0:
+                if self.ratings_data:
                     logger.debug(f"Ratings data: {self.ratings_data}")
                     self.populate_ratings_data(self.ratings_data)
-                if len(self.error_data) > 0:
+                if self.error_data:
                     logger.debug(f"Error data: {self.error_data}")
                     self.populate_error_data(self.error_data)
         except Exception as e:

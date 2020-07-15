@@ -178,7 +178,7 @@ Restart=always
 RestartSec=60
 WorkingDirectory=/home/pi/python-solar
 EnvironmentFile=/home/pi/python-solar/.env
-ExecStart=<gunicorn path> --access-logfile - --workers 3 --timeout 600 --bind unix:/home/pi/python-solar/python-solar.sock solar.wsgi:application
+ExecStart=<gunicorn path> --access-logfile - --workers 1 --timeout 600 --bind unix:/home/pi/python-solar/python-solar.sock solar.wsgi:application
 
 [Install]
 WantedBy=multi-user.target

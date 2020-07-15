@@ -36,7 +36,12 @@ class ControlView(View):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         else:
-            return render(request, "control.html")
+            solar_data = influx_interface.get_ratings_data()
+            return_val = {
+                'command_result': None,
+                'ratings': solar_data,
+            }
+            return render(request, "control.html", {'solar_data': return_val})
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
