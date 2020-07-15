@@ -152,12 +152,15 @@ class PythonSolar:
                 crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
                 logger.debug('Check data len {0}'.format(len(check_data)))
                 if crc == rx_crc or self.debug_data:
-                    result_dictionary[command](result_data[1:-3].split())
+                    if result_data[1:-3] == 'NACK':
+                        logger.error(f'NACK for command {command}')
+                    else:
+                        result_dictionary[command](result_data[1:-3].split())
                 else:
                     logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
                     logger.error('Data: {0}'.format(result_data[:].encode('utf-8')))
             else:
-                logger.error('Incorrect start byte for {0} command'.format(command))
+                logger.error(f'Incorrect start byte for {command} command: {result_data}')
         else:
             logger.error('No data for command {0}'.format(command))
 
