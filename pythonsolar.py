@@ -67,6 +67,8 @@ class PythonSolar:
         logger.info(f"Influx DB config: {config.INFLUX_HOST}, {config.INFLUX_PORT}, {config.INFLUX_DB}")
         if not self.debug_data:
             logger.info("USB info: {0}".format(self.usb_dev))
+            # Read the port to clear it from data
+            self.get_result()
         logger.setLevel(config.LOG_LEVEL)
 
     # Read next line from each file, if at end of the file loop to the beginning
@@ -110,7 +112,7 @@ class PythonSolar:
     def get_result(self,timeout=100):
         res=""
         i=0
-        while '\r' not in res and i<20:
+        while '\r' not in res and i<100:
             try:
                 res+="".join([chr(i) for i in self.usb_dev.read(0x81, 8, timeout) if i!=0x00])
             except usb.core.USBError as e:
