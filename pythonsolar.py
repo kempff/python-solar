@@ -112,7 +112,7 @@ class PythonSolar:
     def get_result(self,timeout=100):
         res=""
         i=0
-        while '\r' not in res and i<100:
+        while '\r' not in res and i<20:
             try:
                 res+="".join([chr(i) for i in self.usb_dev.read(0x81, 8, timeout) if i!=0x00])
             except usb.core.USBError as e:
@@ -190,14 +190,14 @@ class PythonSolar:
                     result = self.get_result()
                     logger.debug(f"{the_cmd}: {result}")
                     self.process_result(the_cmd, result)
-                    time.sleep(1)
+                    time.sleep(2)
                 # If the frontend configured something, request the ratings
                 if self.request_ratings:
                     self.send_command(self.format_data('QPIRI'))
                     result = self.get_result()
                     logger.debug(result)
                     self.process_result('QPIRI', result)
-                    request_ratings = False
+                    self.request_ratings = False
                 self.errors = 0
             except Exception as e:
                 logger.error(f"Send command error {e}")
