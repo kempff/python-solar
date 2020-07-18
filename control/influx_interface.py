@@ -121,10 +121,13 @@ class _InfluxInterface:
             'Battery cutoff V': {'query_param': 'battery_under_voltage', 'result': None},
         }
 
-        for key in ratings_data:
-            db_data = self.influx_client.query(f"SELECT last(\"{ratings_data[key]['query_param']}\") FROM \"system_rating\" WHERE (\"installation\" = '{self.installation}')")
-            # Found this out by: print(db_data.raw)
-            ratings_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
+        try:
+            for key in ratings_data:
+                db_data = self.influx_client.query(f"SELECT last(\"{ratings_data[key]['query_param']}\") FROM \"system_rating\" WHERE (\"installation\" = '{self.installation}')")
+                # Found this out by: print(db_data.raw)
+                ratings_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
+        except Exception as e:
+            the_logger.error(f'Influx ratings retrieve: {str(e)}')
 
 
         solar_data = {
