@@ -37,6 +37,10 @@ class _InfluxInterface:
         Performs the queries and return the result from InfluxDB. Can probably do it in 1 query...
         '''
         last_status_time = None
+        ac_power_24h = None
+        pv_power_24h = None
+        ac_on = 0
+
         status_data = {
             'Battery': {'query_param': 'battery_capacity', 'result': None},
             'AC Power': {'query_param': 'ac_output_w', 'result': None},
@@ -44,43 +48,47 @@ class _InfluxInterface:
             'Charging On': {'query_param': 'charging_on', 'result': None},
             'AC Voltage': {'query_param': 'ac_output_voltage', 'result': None},
         }
+        try:
+            for key in status_data:
+                db_data = self.influx_client.query(f"SELECT last(\"{status_data[key]['query_param']}\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}')")
+                # Found this out by: print(db_data.raw)
+                status_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
 
-        for key in status_data:
-            db_data = self.influx_client.query(f"SELECT last(\"{status_data[key]['query_param']}\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}')")
-            # Found this out by: print(db_data.raw)
-            status_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
+            if status_data['AC Voltage']['result'] > 210:
+                ac_on = 1
 
-        ac_on = 0
-        if status_data['AC Voltage']['result'] > 210:
-            ac_on = 1
+            # Retrieve AC and PV power for previous 24 hours. Get the average and multiply by 24.
+            db_data = self.influx_client.query(f"""
+                SELECT mean(\"ac_output_w\"), mean(\"pv_input_w\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}') 
+                AND time > now() - 24h 
+                """)
+            
+            # To view the data: print(db_data.raw['series'][0]['values'])
+            last_status_time = self.convert_time(db_data.raw['series'][0]['values'][0][0][:-4])
+            ac_power_24h = round(24 * db_data.raw['series'][0]['values'][0][1])
+            pv_power_24h = round(24 * db_data.raw['series'][0]['values'][0][2])
 
-        # Retrieve AC and PV power for previous 24 hours. Get the average and multiply by 24.
-        db_data = self.influx_client.query(f"""
-            SELECT mean(\"ac_output_w\"), mean(\"pv_input_w\") FROM \"system_status\" WHERE (\"installation\" = '{self.installation}') 
-            AND time > now() - 24h 
-            """)
-        
-        # To view the data: print(db_data.raw['series'][0]['values'])
-        last_status_time = self.convert_time(db_data.raw['series'][0]['values'][0][0][:-4])
-        ac_power_24h = round(24 * db_data.raw['series'][0]['values'][0][1])
-        pv_power_24h = round(24 * db_data.raw['series'][0]['values'][0][2])
+        except Exception as e:
+            the_logger.error(f'Influx status: {str(e)}')
 
         # Retrieve last 10 errors for previous 24 hours
-        
-        db_data = self.influx_client.query(f"""
-            SELECT \"severity\", \"message\" FROM \"system_error\" WHERE (\"installation\" = '{self.installation}') 
-            AND time > now() - 24h 
-            ORDER BY time DESC LIMIT 10
-            """)
         error_list = []
-        for error in db_data.raw['series'][0]['values']:
-           
-            error_value = {
-                'timestamp': self.convert_time(error[0][:-4]),
-                'severity': error[1],
-                'error_message': error[2] 
-            }
-            error_list.append(error_value)
+        try:
+            db_data = self.influx_client.query(f"""
+                SELECT \"severity\", \"message\" FROM \"system_error\" WHERE (\"installation\" = '{self.installation}') 
+                AND time > now() - 24h 
+                ORDER BY time DESC LIMIT 10
+                """)
+            for error in db_data.raw['series'][0]['values']:
+            
+                error_value = {
+                    'timestamp': self.convert_time(error[0][:-4]),
+                    'severity': error[1],
+                    'error_message': error[2] 
+                }
+                error_list.append(error_value)
+        except Exception as e:
+            the_logger.error(f'Influx error retrieve: {str(e)}')
 
         solar_data = {
                 "last_status_time": last_status_time,
