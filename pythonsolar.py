@@ -57,7 +57,7 @@ class PythonSolar:
                 self.usb_dev.detach_kernel_driver(interface)
             self.usb_dev.set_interface_altsetting(0,0)
 
-        self.mode_data = None          # From QMOD command
+        self.mode_data = 'B'           # From QMOD command - start with battery mode as default
         self.status_data = None        # From QPIGS command
         self.ratings_data = None       # From QPIRI command
         self.error_data = None         # From QPIWS command
@@ -125,10 +125,10 @@ class PythonSolar:
 
 
     def save_mode_data(self,the_data):
-        if the_data != "NAK":
-            self.mode_data = the_data
-        else:
+        if "NAK" in the_data:
             logger.warning("NAK received - mode data not updated")
+        else:
+            self.mode_data = the_data
 
     
     def save_status_data(self, the_data):
