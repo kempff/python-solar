@@ -125,10 +125,7 @@ class PythonSolar:
 
 
     def save_mode_data(self,the_data):
-        if "NAK" in the_data:
-            logger.warning("NAK received - mode data not updated")
-        else:
-            self.mode_data = the_data
+        self.mode_data = the_data
 
     
     def save_status_data(self, the_data):
@@ -160,7 +157,10 @@ class PythonSolar:
                     if result_data[1:-3] == 'NACK':
                         logger.error(f'NACK for command {command}')
                     else:
-                        result_dictionary[command](result_data[1:-3].split())
+                        if "(NAK" in result_data:
+                            logger.warning(f"NAK received - {command} data not updated")
+                        else:
+                            result_dictionary[command](result_data[1:-3].split())
                 else:
                     logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
                     logger.error('Data: {0}'.format(result_data[:].encode('utf-8')))
