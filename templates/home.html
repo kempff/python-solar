@@ -7,20 +7,30 @@
     <div class="row">
         <div class="col-10">
             <div class="row">
-                <div class="col-5">
+                <div class="col-4">
                     <h4>Battery</h4>
                 </div>
-                <div class="col-5">
-                    <label> {{ solar_data.battery_percentage }}%
-                        <meter value={{ solar_data.battery_percentage }} min=0 low=50 high=70 max=100 optimum=80></meter>
-                    </label>        
+                <div class="col-8">
+                    <div class="progress">
+                        {% if solar_data.battery_percentage >= 70 %}
+                        <div class="progress-bar bg-success" role="progressbar" 
+                            aria-valuemin="0" aria-valuemax="100" style="width:{{ solar_data.battery_percentage }}%">
+                            {{ solar_data.battery_percentage }}% 
+                        </div>
+                        {% else %}
+                        <div class="progress-bar bg-danger" role="progressbar" 
+                            aria-valuemin="0" aria-valuemax="100" style="width:{{ solar_data.battery_percentage }}%">
+                            {{ solar_data.battery_percentage }}% 
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-5">
+                <div class="col-6">
                     <h4>AC</h4>
                 </div>
-                <div class="col-5">
+                <div class="col-6">
                     {% if solar_data.ac_on == 1 %}
                         <img src="{% static "on.jpg" %}" alt="On image"/>
                     {% else %}
@@ -29,10 +39,10 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-5">
+                <div class="col-6">
                     <h4>Battery charge</h4>
                 </div>
-                <div class="col-5">
+                <div class="col-6">
                     {% if solar_data.battery_charge == 1 %}
                         <img src="{% static "on.jpg" %}" alt="On image"/>
                     {% else %}
@@ -45,7 +55,7 @@
                     <h4>Last update</h4>
                 </div>
                 <div class="col-5">
-                    <p>{{ solar_data.last_status_time }}</p>
+                    <h4>{{ solar_data.last_status_time }}</h4>
                 </div>
             </div>
         </div>
