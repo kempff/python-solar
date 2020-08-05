@@ -20,7 +20,7 @@ from constants import command_dictionary
 import solar_config as config
 from solar.struct_logger import StructLogger
 
-APP_VERSION = "0.1.1"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.1.2"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Setup logging
@@ -146,7 +146,7 @@ class PythonSolar:
                             'QPIGS': self.save_status_data,
                             'QPIWS': self.save_error_data}
         hex_data = ":".join("{:02x}".format(ord(c)) for c in result_data)
-        logger.debug("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
+        logger.info("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
         if result_data:
             if result_data[0] is '(':
                 check_data = result_data[:-3].encode('utf-8')
