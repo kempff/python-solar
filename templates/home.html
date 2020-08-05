@@ -5,35 +5,58 @@
 {% load static %}
 <div class="container" id="_reloadThis">
     <div class="row">
-        <div class="col-sm">
-            <h2>Battery</h2>
-            <label> {{ solar_data.battery_percentage }}%
-                <meter value={{ solar_data.battery_percentage }} min=0 low=50 high=70 max=100 optimum=80></meter>
-            </label>
-            <br>
-            <h2>AC</h2>
-            {% if solar_data.ac_on == 1 %}
-                <img src="{% static "on.jpg" %}" alt="On image"/>
-            {% else %}
-                <img src="{% static "off.jpg" %}" alt="Off image" />
-            {% endif %}
-            <h2>Battery charging</h2>
-            {% if solar_data.battery_charge == 1 %}
-                <img src="{% static "on.jpg" %}" alt="On image"/>
-            {% else %}
-                <img src="{% static "off.jpg" %}" alt="Off image" />
-            {% endif %}
-            <h2>Data processed</h2>
-            <p>{{ solar_data.last_status_time }}</p>
+        <div class="col-10">
+            <div class="row">
+                <div class="col-5">
+                    <h4>Battery</h4>
+                </div>
+                <div class="col-5">
+                    <label> {{ solar_data.battery_percentage }}%
+                        <meter value={{ solar_data.battery_percentage }} min=0 low=50 high=70 max=100 optimum=80></meter>
+                    </label>        
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5">
+                    <h4>AC</h4>
+                </div>
+                <div class="col-5">
+                    {% if solar_data.ac_on == 1 %}
+                        <img src="{% static "on.jpg" %}" alt="On image"/>
+                    {% else %}
+                        <img src="{% static "off.jpg" %}" alt="Off image" />
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5">
+                    <h4>Battery charge</h4>
+                </div>
+                <div class="col-5">
+                    {% if solar_data.battery_charge == 1 %}
+                        <img src="{% static "on.jpg" %}" alt="On image"/>
+                    {% else %}
+                        <img src="{% static "off.jpg" %}" alt="Off image" />
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5">
+                    <h4>Last update</h4>
+                </div>
+                <div class="col-5">
+                    <p>{{ solar_data.last_status_time }}</p>
+                </div>
+            </div>
         </div>
-        <div class="col-sm">
-            <h2>AC Power</h2>
+        <div class="col-10">
+            <h4>AC Power</h4>
             <p>Current: {{ solar_data.ac_power.current }} W</p>
             <p>Past 24 hours: {{ solar_data.ac_power.24hours }} W</p>
-            <h2>Solar Power</h2>
+            <h4>Solar Power</h4>
             <p>Current: {{ solar_data.pv_power.current }} W</p>
             <p>Past 24 hours: {{ solar_data.pv_power.24hours }} W</p>
-            <h2>Errors: </h2>
+            <h4>Errors: </h4>
             {% if solar_data.errors %}
             <table>
             <table class="table table-hover">
