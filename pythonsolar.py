@@ -125,7 +125,10 @@ class PythonSolar:
 
 
     def save_mode_data(self,the_data):
-        self.mode_data = the_data
+        if the_data != "NAK":
+            self.mode_data = the_data
+        else:
+            logger.warning("NAK received - mode data not updated")
 
     
     def save_status_data(self, the_data):
