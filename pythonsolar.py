@@ -141,12 +141,13 @@ class PythonSolar:
 
 
     def process_result(self,command, result_data):
+        return_val = False
         result_dictionary = {'QMOD' : self.save_mode_data,
                             'QPIRI': self.save_ratings_data,
                             'QPIGS': self.save_status_data,
                             'QPIWS': self.save_error_data}
         hex_data = ":".join("{:02x}".format(ord(c)) for c in result_data)
-        logger.info("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
+        logger.debug("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
         if result_data:
             if result_data[0] is '(':
                 check_data = result_data[:-3].encode('utf-8')
@@ -161,13 +162,16 @@ class PythonSolar:
                             logger.warning(f"NAK received - {command} data not updated")
                         else:
                             result_dictionary[command](result_data[1:-3].split())
+                            return_val = True
                 else:
-                    logger.error('Incorrect CRC for {0} command {1} - {2}'.format(command, crc, rx_crc))
-                    logger.error('Data: {0}'.format(result_data[:].encode('utf-8')))
+                    logger.error('Incorrect CRC for {0} command Calc: {1} - RX: {2}'.format(command, crc, rx_crc))
+                    logger.error("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
             else:
                 logger.error(f'Incorrect start byte for {command} command: {result_data}')
         else:
             logger.error('No data for command {0}'.format(command))
+        return return_val
+
 
 
     # Read data function (either from USB or file)
@@ -188,12 +192,17 @@ class PythonSolar:
             self.process_result('QPIWS', the_data)
         else:
             try:
-                for the_cmd in cyclic_commands:    
-                    self.send_command(self.format_data(the_cmd))
-                    result = self.get_result()
-                    logger.debug(f"{the_cmd}: {result}")
-                    self.process_result(the_cmd, result)
-                    time.sleep(2)
+                for the_cmd in cyclic_commands:
+                    for cnt in range(0,3):
+                        self.send_command(self.format_data(the_cmd))
+                        result = self.get_result()
+                        logger.debug(f"{the_cmd}: {result}")
+                        # If successful, continue with the next command
+                        if self.process_result(the_cmd, result):
+                            time.sleep(2)
+                            break
+                        # Retry time: a bit longer
+                        time.sleep(5)
                 # If the frontend configured something, request the ratings
                 if self.request_ratings:
                     self.send_command(self.format_data('QPIRI'))
