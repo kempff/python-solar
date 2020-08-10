@@ -20,7 +20,7 @@ from constants import command_dictionary
 import solar_config as config
 from solar.struct_logger import StructLogger
 
-APP_VERSION = "0.1.2"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.1.3"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Setup logging
