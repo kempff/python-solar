@@ -153,16 +153,12 @@ class PythonSolar:
                 check_data = result_data[:-3].encode('utf-8')
                 rx_crc = bytes([ord(result_data[-3:-2]),ord(result_data[-2:-1])])
                 crc = crc16.crc16xmodem(check_data).to_bytes(2,'big')
-                logger.debug('Check data len {0}'.format(len(check_data)))
                 if crc == rx_crc or self.debug_data:
-                    if result_data[1:-3] == 'NACK':
-                        logger.error(f'NACK for command {command}')
+                    if "(NAK" in result_data:
+                        logger.warning(f"NAK received - {command} data not updated")
                     else:
-                        if "(NAK" in result_data:
-                            logger.warning(f"NAK received - {command} data not updated")
-                        else:
-                            result_dictionary[command](result_data[1:-3].split())
-                            return_val = True
+                        result_dictionary[command](result_data[1:-3].split())
+                        return_val = True
                 else:
                     logger.error('Incorrect CRC for {0} command Calc: {1} - RX: {2}'.format(command, crc, rx_crc))
                     logger.error("Data length: {0} Hex: {1}".format(len(result_data),hex_data))
