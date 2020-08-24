@@ -53,8 +53,8 @@ class ControlView(View):
             commands = {
                 'max_charge_current_btn' : {'value':'max_charge_current_val','command':SET_MAX_CURRENT},
                 'ac_charge_current_btn' : {'value':'ac_charge_current_val','command':SET_AC_CURRENT},
-                'battery_redischarge_voltage_btn' : {'value':'battery_redischarge_voltage_val','command':SET_AC_CURRENT},
-                'battery_recharge_voltage_btn' : {'value':'battery_recharge_voltage_val','command':SET_AC_CURRENT},
+                'battery_redischarge_voltage_btn' : {'value':'battery_redischarge_voltage_val','command':SET_BATTERY_REDISCHARGE_VOLTAGE},
+                'battery_recharge_voltage_btn' : {'value':'battery_recharge_voltage_val','command':SET_BATTERY_RECHARGE_VOLTAGE},
                 'battery_cutoff_voltage_btn' : {'value':'battery_cutoff_voltage_val','command':SET_BATTERY_CUTOFF_VOLTAGE},
             }
             for key in commands.keys():

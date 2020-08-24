@@ -395,7 +395,7 @@ class PythonSolar:
 
     def send_command_with_ack_reply(self,command):
         self.send_command(self.format_data(command))
-        result = get_result()
+        result = self.get_result()
         if result[0:4] == '(ACK':
             logger.info(f'Command {command} processed OK')
             self.request_ratings = True
