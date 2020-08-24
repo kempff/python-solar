@@ -20,7 +20,7 @@ from constants import command_dictionary
 import solar_config as config
 from solar.struct_logger import StructLogger
 
-APP_VERSION = "0.1.3"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.1.4"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Setup logging
@@ -394,15 +394,16 @@ class PythonSolar:
 
 
     def send_command_with_ack_reply(self,command):
+        return_val = False
         self.send_command(self.format_data(command))
-        result = get_result()
+        result = self.get_result()
         if result[0:4] == '(ACK':
             logger.info(f'Command {command} processed OK')
             self.request_ratings = True
             return_val = True
         else:
             logger.error(f'Command {command} error, reply {result}')
-            return_val = False
+        return return_val
 
 
     def convert_timestamp_to_datetime(self,in_time):
@@ -562,8 +563,8 @@ class PythonSolar:
 
     def send_command_to_inverter(self, command,value):
         the_command = f"{command_dictionary[command]}{value}"
+        return_val = False
         if self.debug_data:
-            return_val = False
             logger.info(f'Sending \'{command}\' with value {value}')
             if command != 1:
                 return_val = True

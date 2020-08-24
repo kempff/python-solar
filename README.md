@@ -253,16 +253,12 @@ WantedBy=multi-user.target
 * _sudo systemctl start solar_
 * _sudo systemctl enable solar_
 
-### Enable ask for password for 'pi' user
-
-
-
 ### Remote access
 
 Options:
 * Using _remote.it_ to add connections
     * _sudo apt install remoteit_
-    * Broswe to location provided (e.g. http://raspberrypi.local:29999)
+    * Browse to location provided (e.g. http://raspberrypi.local:29999)
     * Setup SSH and HTTP
 * Expost the HTTP port with _remote.it_ and use Gunicorn and Nginx
 
@@ -275,8 +271,46 @@ Options:
         * pipenv shell 
         * python manage.py runserver
 
-## Access from Virtualbox
+## Access from VirtualBox
+
+While debugging the application from a VirtualBox VM:
 
 * Power down Virtualbox
 * Go to "Global Tools" and click on "Create"
 * Go to the "Network" settings of the Virtualbox, select "Host network" and the created network. 
+
+## Restoring from cloned SD card image
+
+* Run _Win32 Disk Imager_ as Administrator and select the image to write
+* Insert SD card into Raspberry Pi and switch on
+* Change the default password for the pi user:
+    * _passwd_
+* Clear the solar database in InfluxDB:
+    * _influx_
+    * _use solardb_
+    * _DROP SERIES FROM /.*/_
+    * _exit_
+* Login as the admin user and change the Django password
+* Change the Grafana Telegram Bot and Organisation name:
+    * _sudo geany /etc/grafana/grafana.ini_
+    * Set anonymous login to _false_
+    * Change the _org_name_
+    * sudo service grafana-server restart
+    * Open Grafana in browser and login with the admin user
+    * Alerting -> Notification Channels -> Chat ID
+    * Open Telegram and create a group. To get the Bot chat ID:
+        * In the Telegram group chat invite @RawDataBot to the chat and get the chat ID from the JSON message
+        * Remove the @RawDataBot again
+    * Configuration -> Preferences
+        * Change _Organisation name_
+        * Change _Home Dashboard_
+    * _sudo geany /etc/grafana/grafana.ini_
+    * Set anonymous login to _true_
+* Change remote.it configuration:
+    * _sudo connectd_installer_
+    * Select option 4
+    * Install SSH and Web clients
+* Go to _python-solar_ directory and delete the log files
+* Configure a static IP address if required:
+    * _sudo nano /etc/dhcpcd.conf_
+    * Edit the configuration in the _Example static IP configuration_ section
