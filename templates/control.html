@@ -9,20 +9,30 @@
         <div class="col-sm">
             <form method="post" id="controlForm">{% csrf_token %}
                 <h4>Set max charge current</h4>
+                <p>(e.g. 030 is 30A)</p>
                     <input type="text" name="max_charge_current_val" value= {{ solar_data.ratings.max_charge_current }}></td>
                     <input class="btn btn-primary" type="submit" name="max_charge_current_btn" value="Submit" />
+                <p></p>
                 <h4>Set AC charge current</h4>
+                <p>(e.g. 030 is 30A)</p>
                     <input type="text" name="ac_charge_current_val" value= {{ solar_data.ratings.max_ac_charge_current }}></td>
                     <input class="btn btn-primary" type="submit" name="ac_charge_current_btn" value="Submit" />
+                <p></p>
                 <h4>Set battery re-discharge voltage</h4>
+                <p>(value from 48 to 58)</p>
                     <input type="text" name="battery_redischarge_voltage_val" value={{ solar_data.ratings.battery_redischarge_voltage }}></td>
                     <input class="btn btn-primary" type="submit" name="battery_redischarge_voltage_btn" value="Submit" />
+                <p></p>
                 <h4>Set battery recharge voltage</h4>
+                <p>(value from 44 to 51)</p>
                     <input type="text" name="battery_recharge_voltage_val" value={{ solar_data.ratings.battery_recharge_voltage }}></td>
                     <input class="btn btn-primary" type="submit" name="battery_recharge_voltage_btn" value="Submit"/>
+                <p></p>
                 <h4>Set battery cutoff voltage</h4>
+                <p>(value from 40.0 to 48.0)</p>
                     <input type="text" name="battery_cutoff_voltage_val" value={{ solar_data.ratings.battery_cutoff_voltage }}></td>
                     <input class="btn btn-primary" type="submit" name="battery_cutoff_voltage_btn" value="Submit"/>
+                <p></p>
             </form>
         </div>
         <div class="col-sm">
