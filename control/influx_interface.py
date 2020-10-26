@@ -1,6 +1,7 @@
 from influxdb import InfluxDBClient
 import pytz
 from datetime import datetime
+from datetime import timedelta
 
 # Load internal modules
 from solar.struct_logger import StructLogger
@@ -23,11 +24,12 @@ class _InfluxInterface:
 
     def convert_time(self, input_value):
         '''
-        Convert time to local timezone
+        Convert time to local timezone after adding 1 day (query was for last 24 hours)
         '''
         time_string = input_value + "+0000"
         utc_time = datetime.strptime(time_string,"%Y-%m-%dT%H:%M:%S.%f%z")
         local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(self.tz)
+        local_time += timedelta(days=1)
         return_val = local_time.strftime("%Y-%m-%d %H:%M:%S")
         the_logger.debug(f'Input: {input_value} converted to {return_val}')
         return return_val
