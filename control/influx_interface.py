@@ -29,6 +29,7 @@ class _InfluxInterface:
         utc_time = datetime.strptime(time_string,"%Y-%m-%dT%H:%M:%S.%f%z")
         local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(self.tz)
         return_val = local_time.strftime("%Y-%m-%d %H:%M:%S")
+        the_logger.debug(f'Input: {input_value} converted to {return_val}')
         return return_val
 
 

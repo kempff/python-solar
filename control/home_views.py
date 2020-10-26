@@ -36,8 +36,5 @@ class HomePageView(View):
     global influx_interface
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-        else:
-            solar_data = influx_interface.get_status_data()
-            return render(request, "home.html", {'solar_data':solar_data})
+        solar_data = influx_interface.get_status_data()
+        return render(request, "home.html", {'solar_data':solar_data})
