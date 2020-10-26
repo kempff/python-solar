@@ -25,10 +25,10 @@
       {% block sidebar %}
         <ul class="sidebar-nav">
           <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="/grafana/">Solar Graphs</a></li>
           {% if user.is_authenticated %}
           <li><a href="{% url 'control' %}">Control</a></li>
           <li><a href="/accounts/logout/">Logout</a></li>
-          <li><a href="/grafana/">Solar Graphs</a></li>
           {% else %}
           <li><a href="/accounts/login/">Login</a></li>
           {% endif %}

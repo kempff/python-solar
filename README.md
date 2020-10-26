@@ -77,9 +77,7 @@ To connect thereafter:
 
 #### Static files
 
-* _sudo mkdir /var/www/_
-* _sudo mkdir /var/www/solar_
-* _sudo mkdir /var/www/solar/static_
+* _sudo mkdir -p /var/www/solar/static_
 * sudo chown to user and group that has access to copy files: _sudo chown pi:pi /var/www/solar -R_
 * Add environment variable: STATIC_ROOT='/var/www/solar/static'
 * In project pipenv shell run: _python manage.py collectstatic_ to copy all the files for serving through Nginx
