@@ -19,6 +19,7 @@ from solar.struct_logger import StructLogger
 from solar.settings import APP_NAME, APP_VERSION
 from constants import SET_MAX_CURRENT, SET_AC_CURRENT, SET_BATTERY_REDISCHARGE_VOLTAGE 
 from constants import SET_BATTERY_RECHARGE_VOLTAGE, SET_BATTERY_CUTOFF_VOLTAGE
+from constants import SET_BATTERY_BULK_VOLTAGE, SET_BATTERY_FLOAT_VOLTAGE
 from control.influx_interface import InfluxInterface
 
 the_logger = StructLogger()
@@ -56,6 +57,8 @@ class ControlView(View):
                 'battery_redischarge_voltage_btn' : {'value':'battery_redischarge_voltage_val','command':SET_BATTERY_REDISCHARGE_VOLTAGE},
                 'battery_recharge_voltage_btn' : {'value':'battery_recharge_voltage_val','command':SET_BATTERY_RECHARGE_VOLTAGE},
                 'battery_cutoff_voltage_btn' : {'value':'battery_cutoff_voltage_val','command':SET_BATTERY_CUTOFF_VOLTAGE},
+                'battery_bulk_voltage_btn' : {'value':'battery_bulk_voltage_val','command':SET_BATTERY_BULK_VOLTAGE},
+                'battery_float_voltage_btn' : {'value':'battery_float_voltage_val','command':SET_BATTERY_FLOAT_VOLTAGE},
             }
             for key in commands.keys():
                 if self.request.POST.get(key):

@@ -122,6 +122,8 @@ class _InfluxInterface:
             'Battery redischarge V': {'query_param': 'battery_redischarge_voltage', 'result': None},
             'Battery recharge V': {'query_param': 'battery_recharge_voltage', 'result': None},
             'Battery cutoff V': {'query_param': 'battery_under_voltage', 'result': None},
+            'Battery bulk V': {'query_param': 'battery_bulk_voltage', 'result': None},
+            'Battery float V': {'query_param': 'battery_float_voltage', 'result': None},
         }
 
         try:
@@ -139,6 +141,8 @@ class _InfluxInterface:
                 "battery_redischarge_voltage": ratings_data['Battery redischarge V']['result'],
                 "battery_recharge_voltage": ratings_data['Battery recharge V']['result'],
                 "battery_cutoff_voltage": ratings_data['Battery cutoff V']['result'],
+                "battery_bulk_voltage": ratings_data['Battery bulk V']['result'],
+                "battery_float_voltage": ratings_data['Battery float V']['result'],
             }
         the_logger.debug(f'Ratings: {solar_data}')
         return solar_data

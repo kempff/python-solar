@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 # Application name and version
-APP_VERSION = "0.2.0"                       # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.2.1"                       # Ensure this is the same as the Git release tag version
 APP_NAME = "Web_Solar"            # Don't use spaces or non-letters
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
