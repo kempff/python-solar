@@ -124,13 +124,17 @@ class _InfluxInterface:
             'Battery cutoff V': {'query_param': 'battery_under_voltage', 'result': None},
             'Battery bulk V': {'query_param': 'battery_bulk_voltage', 'result': None},
             'Battery float V': {'query_param': 'battery_float_voltage', 'result': None},
+            'Battery type': {'query_param': 'battery_type', 'result': None, 'string': True},
         }
 
         try:
             for key in ratings_data:
                 db_data = self.influx_client.query(f"SELECT last(\"{ratings_data[key]['query_param']}\") FROM \"system_rating\" WHERE (\"installation\" = '{self.installation}')")
                 # Found this out by: print(db_data.raw)
-                ratings_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
+                if 'string' in ratings_data[key].keys():
+                    ratings_data[key]['result'] =  db_data.raw['series'][0]['values'][0][1]
+                else:
+                    ratings_data[key]['result'] =  round(db_data.raw['series'][0]['values'][0][1])
         except Exception as e:
             the_logger.error(f'Influx ratings retrieve: {str(e)}')
 
@@ -143,6 +147,7 @@ class _InfluxInterface:
                 "battery_cutoff_voltage": ratings_data['Battery cutoff V']['result'],
                 "battery_bulk_voltage": ratings_data['Battery bulk V']['result'],
                 "battery_float_voltage": ratings_data['Battery float V']['result'],
+                "battery_type": ratings_data['Battery type']['result'],
             }
         the_logger.debug(f'Ratings: {solar_data}')
         return solar_data

@@ -20,7 +20,7 @@ from constants import command_dictionary
 import solar_config as config
 from solar.struct_logger import StructLogger
 
-APP_VERSION = "0.1.7"                               # Ensure this is the same as the Git release tag version
+APP_VERSION = "0.1.8"                               # Ensure this is the same as the Git release tag version
 APP_NAME = "solar_monitor"
 
 # Setup logging
@@ -565,7 +565,7 @@ class PythonSolar:
         the_command = f"{command_dictionary[command]}{value}"
         return_val = False
         if self.debug_data:
-            logger.info(f'Sending \'{command}\' with value {value}')
+            logger.info(f'Sending \'{command}\' with value {value}: {the_command}')
             if command != 1:
                 return_val = True
         else:

@@ -19,7 +19,7 @@ from solar.struct_logger import StructLogger
 from solar.settings import APP_NAME, APP_VERSION
 from constants import SET_MAX_CURRENT, SET_AC_CURRENT, SET_BATTERY_REDISCHARGE_VOLTAGE 
 from constants import SET_BATTERY_RECHARGE_VOLTAGE, SET_BATTERY_CUTOFF_VOLTAGE
-from constants import SET_BATTERY_BULK_VOLTAGE, SET_BATTERY_FLOAT_VOLTAGE
+from constants import SET_BATTERY_BULK_VOLTAGE, SET_BATTERY_FLOAT_VOLTAGE, SET_BATTERY_TYPE
 from control.influx_interface import InfluxInterface
 
 the_logger = StructLogger()
@@ -51,21 +51,25 @@ class ControlView(View):
             command = None
             data = None
             return_val = None
-            commands = {
-                'max_charge_current_btn' : {'value':'max_charge_current_val','command':SET_MAX_CURRENT},
-                'ac_charge_current_btn' : {'value':'ac_charge_current_val','command':SET_AC_CURRENT},
-                'battery_redischarge_voltage_btn' : {'value':'battery_redischarge_voltage_val','command':SET_BATTERY_REDISCHARGE_VOLTAGE},
-                'battery_recharge_voltage_btn' : {'value':'battery_recharge_voltage_val','command':SET_BATTERY_RECHARGE_VOLTAGE},
-                'battery_cutoff_voltage_btn' : {'value':'battery_cutoff_voltage_val','command':SET_BATTERY_CUTOFF_VOLTAGE},
-                'battery_bulk_voltage_btn' : {'value':'battery_bulk_voltage_val','command':SET_BATTERY_BULK_VOLTAGE},
-                'battery_float_voltage_btn' : {'value':'battery_float_voltage_val','command':SET_BATTERY_FLOAT_VOLTAGE},
-            }
-            for key in commands.keys():
-                if self.request.POST.get(key):
-                    data = self.request.POST.get(commands[key]['value'])
-                    command = commands[key]['command']
-                    the_logger.info(f"{key}: {data} ({command})")
-                    break                
+            try:
+                commands = {
+                    'max_charge_current_btn' : {'value':'max_charge_current_val','command':SET_MAX_CURRENT},
+                    'ac_charge_current_btn' : {'value':'ac_charge_current_val','command':SET_AC_CURRENT},
+                    'battery_redischarge_voltage_btn' : {'value':'battery_redischarge_voltage_val','command':SET_BATTERY_REDISCHARGE_VOLTAGE},
+                    'battery_recharge_voltage_btn' : {'value':'battery_recharge_voltage_val','command':SET_BATTERY_RECHARGE_VOLTAGE},
+                    'battery_cutoff_voltage_btn' : {'value':'battery_cutoff_voltage_val','command':SET_BATTERY_CUTOFF_VOLTAGE},
+                    'battery_bulk_voltage_btn' : {'value':'battery_bulk_voltage_val','command':SET_BATTERY_BULK_VOLTAGE},
+                    'battery_float_voltage_btn' : {'value':'battery_float_voltage_val','command':SET_BATTERY_FLOAT_VOLTAGE},
+                    'battery_type_btn':  {'value': 'battery_type_val', 'command': SET_BATTERY_TYPE},
+                }
+                for key in commands.keys():
+                    if self.request.POST.get(key):
+                        data = self.request.POST.get(commands[key]['value'])
+                        command = commands[key]['command']
+                        the_logger.info(f"{key}: {data} ({command})")
+                        break                
+            except Exception as e:
+                the_logger.error(f'Command/POST error: {str(e)}')
             # If there is a command, send it via ZMQ
             if command:
                 data = dict(command=command,data=data)
