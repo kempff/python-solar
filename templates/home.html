@@ -12,7 +12,7 @@
                 </div>
                 <div class="col-8">
                     <div class="progress">
-                        {% if solar_data.battery_percentage >= 70 %}
+                        {% if solar_data.battery_percentage >= 40 %}
                         <div class="progress-bar bg-success" role="progressbar" 
                             aria-valuemin="0" aria-valuemax="100" style="width:{{ solar_data.battery_percentage }}%">
                             {{ solar_data.battery_percentage }}% 
