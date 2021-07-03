@@ -136,11 +136,17 @@ To connect thereafter:
         * In the Telegram group chat invite @RawDataBot to the chat and get the chat ID from the JSON message
         * Remove the @RawDataBot again
         * At the BotFather chat send _/mybots_ and get the Bot API token there
+        * Check at each dashboard with alerts that the correct notification channel is selected
 * Disable the login in Grafana and change user to view only:
     * sudo geany /etc/grafana/grafana.ini
     * Edit the values in the _[auth.anonymous]_ section
     * sudo service grafana-server restart
     * Browse to localhost:3000 and the default page must be displayed
+* To speed up loading of Grafana:
+    * sudo geany /etc/grafana/grafana.ini
+    * enable_gzip = true
+    * sudo service grafana-server restart
+
 
 Note: a default _grafana.ini_ file is included in the _grafana_ directory of the code.
 
